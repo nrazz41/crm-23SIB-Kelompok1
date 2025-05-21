@@ -9,6 +9,7 @@ import {
   LogIn,
   UserPlus,
 } from 'lucide-react'
+import { FaSalesforce } from 'react-icons/fa'
 import { Link, useLocation } from 'react-router-dom'
 
 const menuItems = [
@@ -16,6 +17,7 @@ const menuItems = [
   { name: 'Produk', icon: <Box />, path: '/produk' },
   { name: 'Pelanggan', icon: <ShoppingCart />, path: '/pelanggan' },
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
+  { name: 'Sales', icon: <FaSalesforce />, path: '/sales' },
 ]
 
 const accountItems = [
