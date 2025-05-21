@@ -1,4 +1,4 @@
-import { IoMdPeople } from "react-icons/io"; 
+
 import {
   LayoutDashboard,
   Users,         // untuk pelanggan
@@ -12,7 +12,7 @@ import {
 } from 'lucide-react'
 import { FaSalesforce } from 'react-icons/fa'
 import { Link, useLocation } from 'react-router-dom'
-<IoMdPeople />
+
 const menuItems = [
   { name: 'Dashboard', icon: <LayoutDashboard />, path: '/' },
   { name: 'Produk', icon: <Box />, path: '/produk' },
