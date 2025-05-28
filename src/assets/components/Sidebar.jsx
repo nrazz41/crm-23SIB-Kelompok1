@@ -21,11 +21,13 @@ import { MessageCircle } from "lucide-react";
 
 const menuItems = [
   { name: 'Dashboard', icon: <LayoutDashboard />, path: '/' },
-  { name: 'Produk', icon: <Box />, path: '/produk' },
   { name: 'Pelanggan', icon: <ShoppingCart />, path: '/pelanggan' },
-  { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
   { name: 'Sales', icon: <FaSalesforce />, path: '/sales' },
   { name: 'Product', icon: <ShoppingCart />, path: '/product' },
+   { name: 'Complaint Form', icon: <MessageCircle />, path: '/complaint-form' },
+  { name: "Promo Pelanggan", icon: <Gift />, path: "/promo" },
+  { name: 'MasukanPelanggan',icon: <BsChatRightTextFill />, path: '/masukan' },
+  { name: 'RiwayatPenjualan',icon: <AiOutlineHistory />, path: '/riwayat' },
 ]
 
 const accountItems = [
