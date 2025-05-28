@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { FaSalesforce } from 'react-icons/fa'
 import { Link, useLocation } from 'react-router-dom'
+import { MessageCircle } from "lucide-react";
 
 const menuItems = [
   { name: 'Dashboard', icon: <LayoutDashboard />, path: '/' },
@@ -20,6 +21,7 @@ const menuItems = [
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
   { name: 'Sales', icon: <FaSalesforce />, path: '/sales' },
   { name: 'Product', icon: <ShoppingCart />, path: '/product' },
+  { name: 'komplain', icon: <MessageCircle />, path: '/complaint' },
 ]
 
 const accountItems = [
