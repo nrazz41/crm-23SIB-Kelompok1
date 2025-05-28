@@ -5,7 +5,9 @@ import {
   ShoppingCart,  // untuk penjualan
   Box,           // untuk produk
   BarChart2,     // untuk laporan
-  Settings,      // untuk pengaturan akun
+  Settings,
+  History,
+  Gift,      // untuk pengaturan akun
   User,
   LogIn,
   UserPlus,
@@ -21,7 +23,9 @@ const menuItems = [
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
   { name: 'Sales', icon: <FaSalesforce />, path: '/sales' },
   { name: 'Product', icon: <ShoppingCart />, path: '/product' },
-  { name: 'komplain', icon: <MessageCircle />, path: '/complaint' },
+  { name: 'Complaint Form', icon: <MessageCircle />, path: '/complaint-form' },
+  { name: "Promo Pelanggan", icon: <Gift />, path: "/promo" },
+
 ]
 
 const accountItems = [
