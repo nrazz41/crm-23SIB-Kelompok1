@@ -1,209 +1,164 @@
 import React, { useState } from "react";
 
-const initialProducts = [
-  {
-    id: 1,
-    name: "Laptop ABC",
-    category: "Elektronik",
-    stock: 10,
-    price: 7500000,
-    active: true,
-  },
-  {
-    id: 2,
-    name: "Kursi Gaming",
-    category: "Furniture",
-    stock: 5,
-    price: 1250000,
-    active: false,
-  },
-];
-
-function formatCurrency(num) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-  }).format(num);
-}
-
 export default function ProductManagement() {
-  const [products, setProducts] = useState(initialProducts);
-  const [showForm, setShowForm] = useState(false);
+  const [products, setProducts] = useState([
+    {
+      id: 1,
+      name: "Teh Botol Sosro",
+      price: "Rp7.000",
+      image:
+        "https://cdn.infobrand.id/images/img/posts/2023/02/15/menelusuri-pemilik-teh-botol-sosro-minuman-legendaris-teman-di-saat-makan.jpg",
+      description: "Minuman teh melati segar siap minum, cocok disajikan dingin.",
+    },
+    {
+      id: 2,
+      name: "Indomie Goreng",
+      price: "Rp4.000",
+      image:
+        "https://www.static-src.com/wcsstore/Indraprastha/images/catalog/full//108/MTA-5856786/indomie_indomie_goreng_85gr_full02_b3o9d3ep.jpg",
+      description: "Mi instan goreng legendaris dengan rasa gurih dan pedas manis.",
+    },
+    {
+      id: 3,
+      name: "Aqua Mineral 600ml",
+      price: "Rp3.000",
+      image:
+        "https://notisdigital.com/wp-content/uploads/2024/02/iklan-aqua.jpeg",
+      description: "Air mineral dalam kemasan botol 600ml, segar dan menyehatkan.",
+    },
+    {
+      id: 4,
+      name: "Sari Roti Tawar",
+      price: "Rp12.000",
+      image:
+        "https://swamediainc.storage.googleapis.com/swa.co.id/wp-content/uploads/2020/04/29095131/sari-roti-sariroticom.jpg",
+      description: "Roti tawar lembut dan enak, cocok untuk sarapan dan camilan.",
+    },
+    
+  ]);
+
   const [formData, setFormData] = useState({
     name: "",
-    category: "",
-    stock: "",
     price: "",
-    active: true,
+    image: "",
+    description: "",
   });
+  const [editingId, setEditingId] = useState(null);
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleAddProduct = () => {
-    if (!formData.name || !formData.category || !formData.stock || !formData.price) {
-      alert("Semua kolom harus diisi");
-      return;
+  const handleAddOrUpdate = () => {
+    if (editingId !== null) {
+      const updated = products.map((p) =>
+        p.id === editingId ? { ...p, ...formData } : p
+      );
+      setProducts(updated);
+      setEditingId(null);
+    } else {
+      const newProduct = {
+        id: Date.now(),
+        ...formData,
+      };
+      setProducts([...products, newProduct]);
     }
-    const newProduct = {
-      ...formData,
-      id: products.length + 1,
-      stock: parseInt(formData.stock),
-      price: parseFloat(formData.price),
-    };
-    setProducts([...products, newProduct]);
-    setFormData({ name: "", category: "", stock: "", price: "", active: true });
-    setShowForm(false);
+    setFormData({ name: "", price: "", image: "", description: "" });
+  };
+
+  const handleEdit = (product) => {
+    setFormData(product);
+    setEditingId(product.id);
   };
 
   const handleDelete = (id) => {
-    if (window.confirm("Yakin ingin menghapus produk ini?")) {
-      setProducts(products.filter((p) => p.id !== id));
-    }
+    const filtered = products.filter((p) => p.id !== id);
+    setProducts(filtered);
   };
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-2xl font-semibold mb-4">Manajemen Produk</h1>
+    <div className="p-6 font-[Poppins] bg-gray-50 min-h-screen">
+      <h1 className="text-3xl font-bold text-green-800 mb-6">
+        🛒 Manajemen Produk Supermarket
+      </h1>
 
-      <button
-        onClick={() => setShowForm((prev) => !prev)}
-        className="mb-4 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
-      >
-        {showForm ? "Batal Tambah Produk" : "Tambah Produk"}
-      </button>
-
-      {showForm && (
-        <div className="mb-6 p-4 border border-gray-300 rounded bg-white shadow-sm">
-          <div className="mb-2">
-            <label className="block mb-1 font-medium">Nama Produk</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded focus:ring-indigo-400 focus:outline-none"
-              placeholder="Masukkan nama produk"
-            />
-          </div>
-          <div className="mb-2">
-            <label className="block mb-1 font-medium">Kategori</label>
-            <input
-              type="text"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded focus:ring-indigo-400 focus:outline-none"
-              placeholder="Contoh: Elektronik"
-            />
-          </div>
-          <div className="mb-2">
-            <label className="block mb-1 font-medium">Stok</label>
-            <input
-              type="number"
-              name="stock"
-              value={formData.stock}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded focus:ring-indigo-400 focus:outline-none"
-              min="0"
-            />
-          </div>
-          <div className="mb-2">
-            <label className="block mb-1 font-medium">Harga</label>
-            <input
-              type="number"
-              name="price"
-              value={formData.price}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded focus:ring-indigo-400 focus:outline-none"
-              min="0"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="inline-flex items-center">
-              <input
-                type="checkbox"
-                name="active"
-                checked={formData.active}
-                onChange={handleChange}
-                className="mr-2"
-              />
-              Aktif
-            </label>
-          </div>
-
-          <button
-            onClick={handleAddProduct}
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-          >
-            Simpan Produk
-          </button>
+      {/* Form Tambah/Edit Produk */}
+      <div className="bg-white rounded-xl shadow-md p-6 mb-8">
+        <h2 className="text-xl font-semibold mb-4 text-green-700">
+          {editingId ? "✏️ Edit Produk" : "➕ Tambah Produk"}
+        </h2>
+        <div className="grid md:grid-cols-4 gap-4">
+          <input
+            name="name"
+            placeholder="Nama Produk"
+            value={formData.name}
+            onChange={handleChange}
+            className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-600"
+          />
+          <input
+            name="price"
+            placeholder="Harga (Rp)"
+            value={formData.price}
+            onChange={handleChange}
+            className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-600"
+          />
+          <input
+            name="image"
+            placeholder="URL Gambar"
+            value={formData.image}
+            onChange={handleChange}
+            className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-600"
+          />
+          <input
+            name="description"
+            placeholder="Deskripsi Produk"
+            value={formData.description}
+            onChange={handleChange}
+            className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-600"
+          />
         </div>
-      )}
+        <button
+          onClick={handleAddOrUpdate}
+          className="mt-4 bg-green-700 text-white px-5 py-2 rounded-lg hover:bg-green-800 transition"
+        >
+          {editingId ? "💾 Simpan Perubahan" : "➕ Tambah Produk"}
+        </button>
+      </div>
 
-      <div className="overflow-x-auto bg-white shadow rounded">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Stok</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Harga</th>
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Aksi</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {products.map((product) => (
-              <tr key={product.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4">{product.name}</td>
-                <td className="px-6 py-4">{product.category}</td>
-                <td className="px-6 py-4 text-right">{product.stock}</td>
-                <td className="px-6 py-4 text-right">{formatCurrency(product.price)}</td>
-                <td className="px-6 py-4 text-center">
-                  {product.active ? (
-                    <span className="inline-block px-2 py-1 text-xs text-green-800 bg-green-100 rounded">
-                      Aktif
-                    </span>
-                  ) : (
-                    <span className="inline-block px-2 py-1 text-xs text-gray-600 bg-gray-200 rounded">
-                      Nonaktif
-                    </span>
-                  )}
-                </td>
-                <td className="px-6 py-4 text-center space-x-2">
-                  <button
-                    className="text-indigo-600 hover:text-indigo-900"
-                    onClick={() => alert("Fitur Edit belum tersedia")}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="text-red-600 hover:text-red-900"
-                    onClick={() => handleDelete(product.id)}
-                  >
-                    Hapus
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {products.length === 0 && (
-              <tr>
-                <td colSpan="6" className="text-center py-4 text-gray-500">
-                  Tidak ada produk tersedia.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+      {/* Daftar Produk */}
+      <div className="grid sm:grid-cols-2 lg:grid-cols-6 gap-6">
+        {products.map((product) => (
+          <div
+            key={product.id}
+            className="bg-white rounded-2xl shadow-md hover:shadow-lg transition duration-300 overflow-hidden"
+          >
+            <img
+              src={product.image}
+              alt={product.name}
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-4">
+              <h2 className="text-lg font-bold text-gray-900">{product.name}</h2>
+              <p className="text-sm text-gray-700 mt-1">{product.description}</p>
+              <p className="text-green-700 font-bold mt-2">{product.price}</p>
+              <div className="flex justify-between mt-4">
+                <button
+                  onClick={() => handleEdit(product)}
+                  className="px-4 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition"
+                >
+                  ✏️ Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(product.id)}
+                  className="px-4 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                >
+                  🗑️ Hapus
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
 }
-
-
