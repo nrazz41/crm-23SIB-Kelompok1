@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import MainLayout from "./assets/components/MainLayout";
+import AuthLayout from "./assets/components/AuthLayout";
 import Dashboard from "./assets/Pages/Dashboard";
 import CustomerManagement from "./assets/Pages/CustomerManagement";
 import SalesManagement from "./assets/Pages/SalesManagement";
@@ -8,9 +9,22 @@ import ComplaintForm from "./assets/Pages/ComplaintForm";
 import PromoPelanggan from "./assets/Pages/PromoPelanggan";
 import CustomerFeedbackManager from "./assets/Pages/ManajemenMasukanPelanggan";
 import SalesHistoryPage from "./assets/Pages/RiwayatPenjualan";
+import DataPelanggan from "./assets/Pages/DataPelanggan";
+import HalamanUtama from "./assets/Pages/HalamanUtama";
+import LoginPage from "./assets/Pages/LoginPage"; // Halaman Login
+import RegisterPage from "./assets/Pages/RegisterPage"; // Halaman Registrasi
+
+
 function App() {
   return (
     <Routes>
+      {/* Rute untuk halaman yang tidak memerlukan layout penuh (misal: halaman utama, login, register) */}
+      <Route element={<AuthLayout />}>
+        <Route path="/" element={<HalamanUtama />} /> {/* Halaman utama sebagai root */}
+        <Route path="/signin" element={<LoginPage />} /> {/* Halaman Login */}
+        <Route path="/signup" element={<RegisterPage />} /> {/* Halaman Registrasi */}
+      </Route>
+
       <Route element={<MainLayout />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/Pelanggan" element={<CustomerManagement />} />
@@ -20,6 +34,7 @@ function App() {
         <Route path="/promo" element={<PromoPelanggan />} />
         <Route path="/masukan" element={<CustomerFeedbackManager />} />
         <Route path="/riwayat" element={<SalesHistoryPage/>} />
+        <Route path="/data" element={<DataPelanggan />} />
       </Route>
     </Routes>
   );

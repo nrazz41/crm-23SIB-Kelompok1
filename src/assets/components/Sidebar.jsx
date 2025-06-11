@@ -1,33 +1,30 @@
-import { AiOutlineHistory } from "react-icons/ai"; 
-import { HiDocumentReport } from "react-icons/hi"; 
-import { BsChatRightTextFill } from "react-icons/bs"; 
-
+import React from 'react'
 import {
   LayoutDashboard,
-  Users,         // untuk pelanggan
-  ShoppingCart,  // untuk penjualan
-  Box,           // untuk produk
-  BarChart2,     // untuk laporan
+  Users,          
+  Box,            
+  BarChart2,       
   Settings,
-  History,
-  Gift,      // untuk pengaturan akun
-  User,
+  History,         
+  Gift,           
   LogIn,
   UserPlus,
-} from 'lucide-react'
-import { FaSalesforce } from 'react-icons/fa'
+  MessageCircle,   
+  Briefcase,       
+  ClipboardList,   
+} from 'lucide-react' 
 import { Link, useLocation } from 'react-router-dom'
-import { MessageCircle } from "lucide-react";
 
 const menuItems = [
-  { name: 'Dashboard', icon: <LayoutDashboard />, path: '/' },
-  { name: 'Pelanggan', icon: <ShoppingCart />, path: '/pelanggan' },
-  { name: 'Sales', icon: <FaSalesforce />, path: '/sales' },
-  { name: 'Product', icon: <ShoppingCart />, path: '/product' },
-   { name: 'Complaint Form', icon: <MessageCircle />, path: '/complaint-form' },
+  { name: 'Dashboard', icon: <LayoutDashboard />, path: '/dashboard' }, 
+  { name: 'Pelanggan', icon: <Users />, path: '/pelanggan' }, 
+  { name: 'Sales', icon: <Briefcase />, path: '/sales' },     
+  { name: 'Produk', icon: <Box />, path: '/product' },         
+  { name: 'Complaint Form', icon: <MessageCircle />, path: '/complaint-form' },
   { name: "Promo Pelanggan", icon: <Gift />, path: "/promo" },
-  { name: 'MasukanPelanggan',icon: <BsChatRightTextFill />, path: '/masukan' },
-  { name: 'RiwayatPenjualan',icon: <AiOutlineHistory />, path: '/riwayat' },
+  { name: 'Masukan Pelanggan', icon: <MessageCircle />, path: '/masukan' }, 
+  { name: 'Riwayat Penjualan', icon: <History />, path: '/riwayat' }, 
+  { name: 'Data Pelanggan', icon: <ClipboardList />, path: '/data' },
 ]
 
 const accountItems = [
@@ -42,7 +39,7 @@ const Sidebar = () => {
   const isActive = (path) => location.pathname === path
 
   return (
-    <aside className="bg-white w-64 h-screen shadow-lg px-4 py-6 hidden md:block">
+    <aside className="bg-white w-64 h-screen shadow-lg px-4 py-6 hidden md:block fixed top-0 left-0 z-20">
       <div className="text-xl font-bold mb-8 text-purple-700">UMKM CRM</div>
       <nav className="space-y-1">
         {menuItems.map((item) => (
