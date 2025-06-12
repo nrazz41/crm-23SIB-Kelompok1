@@ -30,7 +30,7 @@ const LoginPage = () => {
     console.log('Email:', email, 'Password:', password); // Log data login
 
     // Langsung arahkan ke halaman dashboard setelah (simulasi) login berhasil
-    navigate('/Dashboard'); // BARIS INI YANG MENGARAHKAN KE DASHBOARD
+    navigate('/dashboard'); // BARIS INI YANG MENGARAHKAN KE DASHBOARD
   };
 
   const handleForgotPassword = () => {
