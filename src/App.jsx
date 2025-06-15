@@ -13,7 +13,8 @@ import DataPelanggan from "./assets/Pages/DataPelanggan";
 import HalamanUtama from "./assets/Pages/HalamanUtama";
 import LoginPage from "./assets/Pages/LoginPage"; // Halaman Login
 import RegisterPage from "./assets/Pages/RegisterPage"; // Halaman Registrasi
-
+import FAQPage from "./assets/Pages/FAQPage";
+import FormPengaduan from "./assets/Pages/FormPengaduan";
 
 function App() {
   return (
@@ -23,6 +24,8 @@ function App() {
         <Route path="/" element={<HalamanUtama />} /> {/* Halaman utama sebagai root */}
         <Route path="/signin" element={<LoginPage />} /> {/* Halaman Login */}
         <Route path="/signup" element={<RegisterPage />} /> {/* Halaman Registrasi */}
+        <Route path="/faq" element={<FAQPage />} />
+        <Route path="/form-pengaduan" element={<FormPengaduan />} />
       </Route>
 
       <Route element={<MainLayout />}>
