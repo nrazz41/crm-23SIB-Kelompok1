@@ -54,11 +54,11 @@ const LoginPage = () => {
         {/* Logo Hawaii - Mengurangi margin-bottom */}
         <div className="mb-4">
           <img
-            src="https://placehold.co/100x100/FF0000/FFFFFF?text=HAWAII"
+            src="/images/logo hawai.png"
             alt="Hawaii Logo"
-            className="mx-auto mb-2 rounded-full"
+            className="mx-auto mb-2 rounded-full w-50 h-50"
           />
-          <p className="text-xl font-semibold text-red-700">HAWAII</p>
+          <p className="text-xl font-semibold text-red-700"></p>
         </div>
 
         {/* Email Input */}
