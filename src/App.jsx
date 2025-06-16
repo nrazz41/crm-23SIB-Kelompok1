@@ -15,6 +15,10 @@ import LoginPage from "./assets/Pages/LoginPage"; // Halaman Login
 import RegisterPage from "./assets/Pages/RegisterPage"; // Halaman Registrasi
 import FAQPage from "./assets/Pages/FAQPage";
 import FormPengaduan from "./assets/Pages/FormPengaduan";
+import NotificationPage from "./assets/Pages/NotificationPage";
+import CartPage from "./assets/Pages/CartPage";
+import PromoPage from "./assets/Pages/PromoPage";
+import CategoryPage from "./assets/Pages/CategoryPage";
 
 function App() {
   return (
@@ -26,6 +30,10 @@ function App() {
         <Route path="/signup" element={<RegisterPage />} /> {/* Halaman Registrasi */}
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/form-pengaduan" element={<FormPengaduan />} />
+        <Route path="/notification" element={<NotificationPage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/promo-page" element={<PromoPage />} />
+        <Route path="/category/categoryName" element={<CategoryPage />} />
       </Route>
 
       <Route element={<MainLayout />}>
