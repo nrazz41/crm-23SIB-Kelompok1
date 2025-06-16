@@ -14,6 +14,7 @@ import HalamanUtama from "./assets/Pages/HalamanUtama";
 import LoginPage from "./assets/Pages/LoginPage"; // Halaman Login
 import RegisterPage from "./assets/Pages/RegisterPage"; // Halaman Registrasi
 
+import PromoDashboard from "./assets/Pages/PromoDashboard";
 
 function App() {
   return (
@@ -35,6 +36,12 @@ function App() {
         <Route path="/masukan" element={<CustomerFeedbackManager />} />
         <Route path="/riwayat" element={<SalesHistoryPage/>} />
         <Route path="/data" element={<DataPelanggan />} />
+        <Route path="/" element={<Dashboard />} />
+         <Route path="/Pelanggan" element={<CustomerManagement />} />
+         <Route path="/Produk" element={<ProductManagement />} />
+         <Route path="/Promo" element={<PromoDashboard />} />
+         
+         
       </Route>
     </Routes>
   );
