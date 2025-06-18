@@ -2,16 +2,17 @@
 
 import {
   LayoutDashboard,
-  Users,          // untuk pelanggan
-  ShoppingCart,   // untuk penjualan
-  Box,            // untuk produk
-  BarChart2,      // untuk laporan
-  Settings,       // untuk pengaturan akun
-  Tag,            // Ikon untuk Promo
-  LogIn,          // Untuk Sign In
-  UserPlus,       // Untuk Sign Up
-  FileText,       // Ikon untuk Keluhan & Layanan
-  LogOut,         // Ikon untuk Logout
+  Users, // untuk pelanggan
+  ShoppingCart, // untuk penjualan
+  Box, // untuk produk
+  BarChart2, // untuk laporan
+  Settings, // untuk pengaturan akun
+  Tag, // Ikon untuk Promo
+  LogIn, // Untuk Sign In
+  UserPlus, // Untuk Sign Up
+  FileText, // Ikon untuk Keluhan & Layanan
+  LogOut, // Ikon untuk Logout
+  Newspaper, // <<< --- IMPORT INI untuk Artikel
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -24,7 +25,8 @@ const menuItems = [
   { name: 'Penjualan', icon: <ShoppingCart />, path: '/penjualan' },
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
   { name: 'Keluhan & Layanan', icon: <FileText />, path: '/keluhan-layanan' },
-  { name: 'Promo', icon: <Tag />, path: '/Promo' },
+  { name: 'Promo', icon: <Tag />, path: '/promo' }, // Pastikan path ini konsisten dengan '/promo' (lowercase) jika itu yang Anda gunakan
+  { name: 'Artikel', icon: <Newspaper />, path: '/artikel' }, // <<< --- TAMBAHKAN ITEM INI
 ];
 
 const accountItems = [
@@ -41,6 +43,8 @@ const Sidebar = () => {
     if (path === '/') {
       return location.pathname === '/';
     }
+    // Perbaikan: gunakan startsWith untuk mencocokkan path awal
+    // Misalnya, '/promo' akan cocok dengan '/promo/edit/123'
     return location.pathname.startsWith(path);
   };
 
