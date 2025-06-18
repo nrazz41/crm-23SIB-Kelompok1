@@ -23,14 +23,11 @@ const menuItems = [
   { name: 'Pelanggan', icon: <Users />, path: '/pelanggan' },
   { name: 'Penjualan', icon: <ShoppingCart />, path: '/penjualan' },
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
-  { name: 'Keluhan & Layanan', icon: <FileText />, path: '/keluhan-layanan' },
+  { name: 'Keluhan & Layanan', icon: <FileText />, path: '/masukan' },
   { name: 'Promo', icon: <Tag />, path: '/Promo' },
 ];
 
 const accountItems = [
-  { name: 'Pengaturan Akun', icon: <Settings />, path: '/akun' },
-  { name: 'Sign In', icon: <LogIn />, path: '/signin' },
-  { name: 'Sign Up', icon: <UserPlus />, path: '/signup' },
   { name: 'Logout', icon: <LogOut />, path: '/logout' },
 ];
 
