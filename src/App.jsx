@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import React, { useState } from 'react';
 import MainLayout from "./assets/components/MainLayout";
 import AuthLayout from "./assets/components/AuthLayout";
 import Dashboard from "./assets/Pages/Dashboard";
@@ -25,9 +26,11 @@ function App() {
     <Routes>
       {/* Rute untuk halaman yang tidak memerlukan layout penuh (misal: halaman utama, login, register) */}
       <Route element={<AuthLayout />}>
-        <Route path="/" element={<HalamanUtama />} /> {/* Halaman utama sebagai root */}
+        <Route path="/" element={<HalamanUtama />} />{" "}
+        {/* Halaman utama sebagai root */}
         <Route path="/signin" element={<LoginPage />} /> {/* Halaman Login */}
-        <Route path="/signup" element={<RegisterPage />} /> {/* Halaman Registrasi */}
+        <Route path="/signup" element={<RegisterPage />} />{" "}
+        {/* Halaman Registrasi */}
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/form-pengaduan" element={<FormPengaduan />} />
         <Route path="/notification" element={<NotificationPage />} />
@@ -41,17 +44,11 @@ function App() {
         <Route path="/Pelanggan" element={<CustomerManagement />} />
         <Route path="/sales" element={<SalesManagement />} />
         <Route path="/product" element={<ProductManagement />} />
-         <Route path="/complaint-form" element={<ComplaintForm />} />
+        <Route path="/complaint-form" element={<ComplaintForm />} />
         <Route path="/promo" element={<PromoPelanggan />} />
         <Route path="/masukan" element={<CustomerFeedbackManager />} />
-        <Route path="/riwayat" element={<SalesHistoryPage/>} />
+        <Route path="/riwayat" element={<SalesHistoryPage />} />
         <Route path="/data" element={<DataPelanggan />} />
-        <Route path="/" element={<Dashboard />} />
-         <Route path="/Pelanggan" element={<CustomerManagement />} />
-         <Route path="/Produk" element={<ProductManagement />} />
-         <Route path="/Promo" element={<PromoDashboard />} />
-         
-         
       </Route>
     </Routes>
   );
