@@ -102,6 +102,8 @@ const Sidebar = () => {
         </nav>
       </div>
 
+    
+
       {/* Footer opsional */}
       <div className="mt-auto pt-6 text-center text-gray-500 text-xs">
         &copy; {new Date().getFullYear()} UMKM CRM.
