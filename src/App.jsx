@@ -17,6 +17,7 @@ import RegisterPage from "./assets/Pages/RegisterPage"; // Halaman Registrasi
 import FAQPage from "./assets/Pages/FAQPage";
 import FormPengaduan from "./assets/Pages/FormPengaduan";
 import ManajemenPenjualanPage from "./assets/Pages/ManajemenPenjualanPage";
+import ArticleDashboard from "./assets/Pages/ArticleDashboard";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
          <Route path="/Pelanggan" element={<CustomerManagement />} />
          <Route path="/Produk" element={<ProductManagement />} />
          <Route path="/Penjualan" element={<ManajemenPenjualanPage />} />
+         <Route path="/artikel" element={< ArticleDashboard/>} />
          
          
       </Route>

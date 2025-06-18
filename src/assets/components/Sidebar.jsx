@@ -26,6 +26,7 @@ const menuItems = [
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
   { name: 'Keluhan & Layanan', icon: <FileText />, path: '/keluhan-layanan' },
   { name: 'Promo', icon: <Tag />, path: '/Promo' },
+  { name: 'Artikel', icon: <Newspaper />, path: '/artikel' },
 ];
 
 const accountItems = [
