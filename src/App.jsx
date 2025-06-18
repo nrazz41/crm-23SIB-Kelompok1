@@ -16,30 +16,8 @@ import LoginPage from "./assets/Pages/LoginPage"; // Halaman Login
 import RegisterPage from "./assets/Pages/RegisterPage"; // Halaman Registrasi
 import FAQPage from "./assets/Pages/FAQPage";
 import FormPengaduan from "./assets/Pages/FormPengaduan";
-import ManajemenPenjualanPage from "./assets/Pages/ManajemenPenjualanPage";
-import TransaksiPelangganDetail from "./assets/Pages/DetailTransaksiPelanggan";
-const App = () => {
-  const [pelanggan, setPelanggan] = useState([]);
-  const [transaksi] = useState([
-    {
-      id: 'TRX001',
-      customerId: 'C001',
-      produk: 'Gula',
-      jumlah: 2,
-      total: 24000,
-      tanggal: '2024-06-17'
-    },
-    {
-      id: 'TRX002',
-      customerId: 'C002',
-      produk: 'Minyak Goreng',
-      jumlah: 3,
-      total: 54000,
-      tanggal: '2024-06-18'
-    }
-    // Tambahkan transaksi lainnya
-  ]);
-  
+
+function App() {
   return (
     <Routes>
       {/* Rute untuk halaman yang tidak memerlukan layout penuh (misal: halaman utama, login, register) */}
@@ -64,15 +42,10 @@ const App = () => {
         <Route path="/riwayat" element={<SalesHistoryPage />} />
         <Route path="/data" element={<DataPelanggan />} />
         <Route path="/" element={<Dashboard />} />
-        <Route path="/Pelanggan" element={<CustomerManagement />} />
-        <Route path="/Produk" element={<ProductManagement />} />
-        <Route path="/Penjualan" element={<ManajemenPenjualanPage />} />
-        <Route path="/pelanggan/:id/transaksi" element={
-          <TransaksiPelangganDetail 
-            pelangganData={pelanggan} 
-            transaksiData={transaksi} 
-          />
-        } />
+         <Route path="/Pelanggan" element={<CustomerManagement />} />
+         <Route path="/Produk" element={<ProductManagement />} />
+         
+         
       </Route>
     </Routes>
   );
