@@ -18,22 +18,20 @@ import { Link, useLocation } from 'react-router-dom';
 const HAWAII_LOGO_URL = 'https://bajo.jumbomark.com/labels/JID2022057238';
 
 const menuItems = [
-  // Memastikan semua menu utama ada
   { name: 'Dashboard', icon: <LayoutDashboard />, path: '/dashboard' },
-  { name: 'Produk', icon: <Box />, path: '/produk' }, // Kembali ke 'Produk'
+  { name: 'Produk', icon: <Box />, path: '/produk' },
   { name: 'Pelanggan', icon: <Users />, path: '/pelanggan' },
   { name: 'Penjualan', icon: <ShoppingCart />, path: '/penjualan' },
-  { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' }, // Laporan tetap ada
-  { name: 'Keluhan & Layanan', icon: <FileText />, path: '/keluhan-layanan' }, // Keluhan & Layanan tetap ada
-  { name: 'Promo', icon: <Tag />, path: '/Promo' }, // Promo sebagai halaman utama
+  { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
+  { name: 'Keluhan & Layanan', icon: <FileText />, path: '/keluhan-layanan' },
+  { name: 'Promo', icon: <Tag />, path: '/Promo' },
 ];
 
 const accountItems = [
-  // Memastikan semua menu akun ada
-  { name: 'Pengaturan Akun', icon: <Settings />, path: '/akun' }, // Kembali ke 'Pengaturan Akun'
-  { name: 'Sign In', icon: <LogIn />, path: '/signin' }, // Sign In tetap ada
-  { name: 'Sign Up', icon: <UserPlus />, path: '/signup' }, // Sign Up tetap ada
-  { name: 'Logout', icon: <LogOut />, path: '/logout' }, // Logout tetap ada
+  { name: 'Pengaturan Akun', icon: <Settings />, path: '/akun' },
+  { name: 'Sign In', icon: <LogIn />, path: '/signin' },
+  { name: 'Sign Up', icon: <UserPlus />, path: '/signup' },
+  { name: 'Logout', icon: <LogOut />, path: '/logout' },
 ];
 
 const Sidebar = () => {
@@ -43,7 +41,6 @@ const Sidebar = () => {
     if (path === '/') {
       return location.pathname === '/';
     }
-    // Menggunakan startsWith agar path seperti /produk/detail juga mengaktifkan 'Produk'
     return location.pathname.startsWith(path);
   };
 
@@ -73,6 +70,11 @@ const Sidebar = () => {
                   : 'text-[#B82329] hover:bg-[#FDD5D5] hover:text-[#B82329]'
               }
             `}
+          >
+            <span className="w-5 h-5 flex-shrink-0">{item.icon}</span>
+            <span className="truncate">{item.name}</span>
+          </Link>
+        ))}
       </nav>
 
       {/* Bagian Akun dengan judul "AKUN" */}

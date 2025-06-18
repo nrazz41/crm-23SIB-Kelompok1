@@ -41,7 +41,6 @@ function App() {
         <Route path="/" element={<Dashboard />} />
          <Route path="/Pelanggan" element={<CustomerManagement />} />
          <Route path="/Produk" element={<ProductManagement />} />
-         <Route path="/Promo" element={<PromoDashboard />} />
          
          
       </Route>
