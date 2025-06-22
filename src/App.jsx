@@ -36,7 +36,7 @@ function App() {
         <Route path="/notification" element={<NotificationPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/promo-page" element={<PromoPage />} />
-        <Route path="/category/categoryName" element={<CategoryPage />} />
+        <Route path="/category/:categoryName" element={<CategoryPage />} />
       </Route>
 
       <Route element={<MainLayout />}>
