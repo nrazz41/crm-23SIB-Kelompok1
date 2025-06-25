@@ -89,14 +89,14 @@ const FAQPage = () => {
 
           <div className="flex items-center space-x-2">
             <Link
-              to="/voucher"
+              to="/promo-page"
               className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-gray-700 shadow-md hover:bg-gray-100 transition"
             >
               <Tag size={20} />
             </Link>
 
             <Link
-              to="/keranjang"
+              to="/cart"
               className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-gray-700 shadow-md hover:bg-gray-100 transition"
             >
               <ShoppingCart size={20} />

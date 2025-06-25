@@ -12,7 +12,12 @@ import {
   UserPlus, // Untuk Sign Up
   FileText, // Ikon untuk Keluhan & Layanan
   LogOut, // Ikon untuk Logout
-  Newspaper, // <<< --- IMPORT INI untuk Artikel
+  Newspaper,
+  Briefcase,
+  MessageCircle,
+  Gift,
+  ClipboardList,
+  History, // <<< --- IMPORT INI untuk Artikel
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 

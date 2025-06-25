@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
-import { MapPin, ChevronDown } from 'lucide-react';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { MapPin, ChevronDown, MessageSquare } from 'lucide-react';
 
 const AuthLayout = () => {
+  const navigate = useNavigate();
+
   const [isAddressOpen, setIsAddressOpen] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState("Jl Yos Sudarso - Rumbai");
-
-  const [isPickupOpen, setIsPickupOpen] = useState(false);
-  const [selectedPickup, setSelectedPickup] = useState("Pick Up");
 
   const addresses = [
     "Jl Yos Sudarso - Rumbai",
@@ -17,23 +16,10 @@ const AuthLayout = () => {
     "Jl Durian No.1E Payung Sekaki",
   ];
 
-  const pickupOptions = [
-    "Ambil di Toko",
-    "Antar ke Rumah",
-    "Diambil oleh Perwakilan"
-  ];
-
   const toggleAddressDropdown = () => setIsAddressOpen(!isAddressOpen);
-  const togglePickupDropdown = () => setIsPickupOpen(!isPickupOpen);
-
   const selectAddress = (address) => {
     setSelectedAddress(address);
     setIsAddressOpen(false);
-  };
-
-  const selectPickup = (pickup) => {
-    setSelectedPickup(pickup);
-    setIsPickupOpen(false);
   };
 
   const handleLanguageClick = () => {
@@ -51,6 +37,10 @@ const AuthLayout = () => {
     };
   };
 
+  const handleChatClick = () => {
+    navigate('/chat'); // Ganti dengan rute chat-mu
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 font-sans antialiased flex flex-col items-center">
       <header className="w-full bg-red-600 py-3 px-4 md:px-8 shadow-md relative">
@@ -62,8 +52,9 @@ const AuthLayout = () => {
             <ChevronDown size={16} />
           </div>
 
-          {/* Lokasi dan Pick Up */}
+          {/* Lokasi dan Chat */}
           <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4">
+            
             {/* Lokasi */}
             <div className="relative">
               <div className="flex items-center space-x-1 cursor-pointer" onClick={toggleAddressDropdown}>
@@ -86,25 +77,13 @@ const AuthLayout = () => {
               )}
             </div>
 
-            {/* Pick Up */}
-            <div className="relative">
-              <div className="flex items-center space-x-1 cursor-pointer" onClick={togglePickupDropdown}>
-                <span className="text-sm">{selectedPickup}</span>
-                <ChevronDown size={16} />
-              </div>
-              {isPickupOpen && (
-                <div className="absolute mt-2 bg-white text-gray-900 rounded-md shadow-md w-48 z-50 right-0">
-                  {pickupOptions.map((option, idx) => (
-                    <div
-                      key={idx}
-                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm"
-                      onClick={() => selectPickup(option)}
-                    >
-                      {option}
-                    </div>
-                  ))}
-                </div>
-              )}
+            {/* 🔄 Ganti Pick Up → Chat */}
+            <div
+              className="flex items-center space-x-1 cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={handleChatClick}
+            >
+              <MessageSquare size={16} />
+              <span className="text-sm">Chat</span>
             </div>
           </div>
         </div>
