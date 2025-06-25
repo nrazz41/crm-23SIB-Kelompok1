@@ -464,7 +464,7 @@ const HomePage = () => {
               <br />
               Jl Hitam Ujung
               <br />
-              Simpang Jengkol
+              Jl Hangtuah Ujung Simpang Jengkol
               <br />
               Jl Durian No.1E Payung Sekaki
             </p>

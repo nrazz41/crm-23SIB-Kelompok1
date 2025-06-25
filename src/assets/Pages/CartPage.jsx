@@ -1,263 +1,295 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { Search, ShoppingCart, User, Percent, Bell } from "lucide-react"; // Import necessary icons
+// src/assets/pages/CartPage.jsx
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Search, ShoppingCart, User, Percent, Bell, Trash2, ChevronDown, Plus, Minus, Info, ChevronRight } from "lucide-react";
+import { useCart } from '../../assets/contexts/CartContext'; // Import useCart hook
 
-// --- DATA DUMMY PESANAN (Sama dengan yang di HomePage) ---
-const dummyOrders = [
-  {
-    id: "HAW001",
-    status: "Selesai",
-    shopName: "MINISO INDONESIA",
-    shopLogo: "https://via.placeholder.com/40x40", // Placeholder logo toko
-    products: [
-      {
-        name: "MINISO Perfume Mystic Eau De Toilette (Mountain Night) 50ml Parfum Pria",
-        variant: "Mountain Night",
-        qty: 2,
-        price: 159800,
-        imageUrl: "https://via.placeholder.com/80x80/FF0000/FFFFFF?text=Parfum", // Placeholder produk
-      },
-    ],
-    total: 102356,
-    deliveryStatus: "Pesanan tiba di alamat tujuan.",
-    isRated: true,
-  },
-  {
-    id: "HAW002",
-    status: "Semua", // Status default agar muncul di tab "Semua"
-    shopName: "BROGUYID",
-    shopLogo: "https://via.placeholder.com/40x40",
-    products: [
-      {
-        name: "BROGUY Kemeja Koko Pria Dewasa Lengan Panjang Barra",
-        variant: "Grey:L",
-        qty: 1,
-        price: 197000,
-        imageUrl: "https://via.placeholder.com/80x80/0000FF/FFFFFF?text=Kemeja",
-      },
-    ],
-    total: 118765,
-    deliveryStatus: "Pesanan tiba di alamat tujuan. diterima oleh Yang bersangkutan.",
-    isRated: false,
-  },
-  {
-    id: "HAW003",
-    status: "Dikirim",
-    shopName: "Toko Bahan Pokok",
-    shopLogo: "https://via.placeholder.com/40x40",
-    products: [
-      {
-        name: "Beras Cap Ayam Jago 5 Kg",
-        variant: null,
-        qty: 1,
-        price: 65000,
-        imageUrl: "/images/beras-5kg.png",
-      },
-      {
-        name: "Minyak Goreng Sania 2 Liter",
-        variant: null,
-        qty: 1,
-        price: 36000,
-        imageUrl: "/images/minyak-sania.png",
-      },
-    ],
-    total: 101000,
-    deliveryStatus: "Dalam perjalanan ke alamat Anda.",
-    isRated: false,
-  },
-  {
-    id: "HAW004",
-    status: "Belum Bayar",
-    shopName: "Elektronik Murah",
-    shopLogo: "https://via.placeholder.com/40x40",
-    products: [
-      {
-        name: "Headset Gaming RGB XYZ",
-        variant: "Black",
-        qty: 1,
-        price: 250000,
-        imageUrl: "https://via.placeholder.com/80x80/00FF00/FFFFFF?text=Headset",
-      },
-    ],
-    total: 250000,
-    deliveryStatus: "Menunggu pembayaran.",
-    isRated: false,
-  },
-];
+// Fungsi helper untuk memformat mata uang
+const formatCurrency = (number) => {
+  if (typeof number !== "number") return "Rp 0";
+  return number.toLocaleString("id-ID", { style: "currency", currency: "IDR" });
+};
 
 const CartPage = () => {
-  const [activeTab, setActiveTab] = useState("Semua"); // State untuk tab aktif
+  const navigate = useNavigate();
+  const {
+    cartItems,
+    updateQuantity,
+    removeItem,
+    toggleItemSelection,
+    toggleShopSelection,
+    toggleSelectAll,
+    totalProductsSelected,
+    totalPrice
+  } = useCart(); // Ambil state dan fungsi dari CartContext
 
-  const filteredOrders = dummyOrders.filter(order => {
-    if (activeTab === "Semua") return true;
-    // Perhatikan: beberapa order mungkin memiliki status "Semua" di dummy,
-    // yang berarti mereka akan selalu muncul di tab "Semua",
-    // dan juga di tab spesifik jika statusnya cocok (misal "Dikirim")
-    return order.status === activeTab;
-  });
+  // State lokal untuk 'Pilih Semua' di bagian footer
+  // Kita akan sinkronkan ini dengan state global dari context
+  const [selectAllFooter, setSelectAllFooter] = useState(true);
+
+  // Sinkronkan state selectAllFooter dengan apakah semua item terpilih di context
+  useEffect(() => {
+    const allSelected = cartItems.every(shop => shop.products.every(p => p.selected));
+    setSelectAllFooter(allSelected);
+  }, [cartItems]);
+
+
+  // Handle 'Pilih Semua' di footer
+  const handleSelectAllFooter = (event) => {
+    const isChecked = event.target.checked;
+    toggleSelectAll(isChecked);
+  };
+
+  // Handle 'Hapus' item yang dipilih
+  const handleDeleteSelectedItems = () => {
+    cartItems.forEach(shop => {
+      shop.products.forEach(product => {
+        if (product.selected) {
+          removeItem(shop.id, product.itemId);
+        }
+      });
+    });
+  };
+
+  // Fungsi untuk menampilkan message box (seperti yang digunakan di HomePage)
+  const displayMessageBox = (message) => {
+    const messageBox = document.createElement("div");
+    messageBox.className =
+      "fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50";
+    messageBox.innerHTML = `
+      <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm mx-4 text-center">
+        <p class="text-lg text-gray-800 mb-4">${message}</p>
+        <button id="closeMessageBox" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">OK</button>
+      </div>
+    `;
+    document.body.appendChild(messageBox);
+    document.getElementById("closeMessageBox").onclick = () => {
+      document.body.removeChild(messageBox);
+    };
+  };
 
   return (
     <div className="w-full flex flex-col items-center min-h-screen bg-gray-100">
-      {/* Header (Mirroring HomePage header for consistency) */}
-      <div className="w-full bg-red-600 py-3 px-4 md:px-8 shadow-md">
+      {/* Header (Putih dengan logo Hawaii) */}
+      <div className="w-full bg-white py-3 px-4 md:px-8 shadow-md">
         <div className="max-w-7xl mx-auto flex items-center justify-between space-x-4">
-          <div className="flex items-center space-x-2 text-white font-bold text-2xl">
+          <div className="flex items-center space-x-2 text-red-600 font-bold text-2xl">
             <Link to="/">
               <img
                 src="/images/logo hawai.png"
                 alt="Logo Hawai"
-                className="w-11 h-11 rounded-full border-2 border-white"
+                className="w-11 h-11 rounded-full border-2 border-red-600"
               />
             </Link>
             <span>HAWAII</span>
           </div>
-
-          <div className="flex-1 max-w-md relative">
-            <input
-              type="text"
-              placeholder="Cari kebutuhan sehari-hari..."
-              className="w-full pl-4 pr-10 py-2.5 rounded-full bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-inner"
-              disabled // Non-fungsional di halaman keranjang
-            />
-            <Search size={20} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" />
+          <div className="flex-1 text-center">
+            <h1 className="text-xl font-bold text-gray-800">Keranjang Belanja</h1>
           </div>
-
           <div className="flex items-center space-x-2">
-            <Link to="/notification" className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-gray-700 shadow-md hover:bg-gray-100 transition">
+            <Link to="/notification" className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-red-600 shadow-md hover:bg-gray-200 transition">
               <Bell size={20} />
             </Link>
-            <Link to="/promo-page" className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-gray-700 shadow-md hover:bg-gray-100 transition">
+            <Link to="/promo-page" className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-red-600 shadow-md hover:bg-gray-200 transition">
               <Percent size={20} />
             </Link>
-            <Link to="/cart" className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-gray-700 shadow-md hover:bg-gray-100 transition">
+            <Link to="/cart" className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-red-600 shadow-md hover:bg-gray-200 transition">
               <ShoppingCart size={20} />
             </Link>
-            <Link to="/signin" className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-gray-700 shadow-md hover:bg-gray-100 transition">
+            <Link to="/signin" className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-red-600 shadow-md hover:bg-gray-200 transition">
               <User size={20} />
             </Link>
           </div>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto w-full bg-white rounded-lg shadow-lg my-8 flex flex-col min-h-[70vh]">
-        <div className="p-4 border-b border-gray-200">
-          <h1 className="text-2xl font-bold text-gray-800 text-center">Pesanan Saya</h1>
-        </div>
-
-        {/* Navigasi Tab */}
-        <div className="flex border-b border-gray-200 bg-gray-50 sticky top-0 z-10">
-          {["Semua", "Belum Bayar", "Sedang Dikemas", "Dikirim", "Selesai", "Dibatalkan", "Pengembalian Barang"].map(tab => (
-            <button
-              key={tab}
-              className={`flex-1 py-3 text-sm font-semibold border-b-2 ${
-                activeTab === tab
-                  ? "border-red-600 text-red-600"
-                  : "border-transparent text-gray-600 hover:text-gray-800"
-              } transition-colors`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        {/* Input Pencarian Pesanan */}
-        <div className="p-4 border-b border-gray-200">
-          <div className="relative">
+      {/* Main Content Area */}
+      <div className="max-w-4xl mx-auto w-full bg-white rounded-lg shadow-lg my-6 md:my-8 overflow-hidden">
+        {/* Header Tabel/Daftar Produk */}
+        <div className="flex items-center p-4 border-b border-gray-200 text-gray-500 text-sm font-semibold">
+          <div className="w-1/12 flex-shrink-0">
             <input
-              type="text"
-              placeholder="Kamu bisa cari berdasarkan Nama Penjual, No. Pesanan atau Nama Produk"
-              className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-gray-100 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-300 shadow-inner"
+              type="checkbox"
+              className="form-checkbox text-red-600 rounded"
+              checked={selectAllFooter} // Menggunakan state dari context
+              onChange={handleSelectAllFooter} // Menggunakan fungsi dari context
             />
-            <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
           </div>
+          <div className="w-4/12 md:w-5/12 flex-grow">Produk</div>
+          <div className="w-2/12 hidden md:block text-center">Harga Satuan</div>
+          <div className="w-1/12 hidden md:block text-center">Kuantitas</div>
+          <div className="w-2/12 hidden md:block text-right">Total Harga</div>
+          <div className="w-1/12 text-right">Aksi</div>
         </div>
 
-        {/* Konten Tab Pesanan */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {filteredOrders.length > 0 ? (
-            filteredOrders.map(order => (
-              <div key={order.id} className="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
-                {/* Header Toko */}
-                <div className="flex items-center justify-between border-b pb-3 mb-3">
-                  <div className="flex items-center space-x-2">
-                    {/* <img src={order.shopLogo} alt={order.shopName} className="w-8 h-8 rounded-full" /> */}
-                    <span className="font-bold text-gray-800">{order.shopName}</span>
-                    <button className="text-sm text-blue-600 px-2 py-1 rounded-full border border-blue-600 hover:bg-blue-50">Chat</button>
-                    <button className="text-sm text-gray-600 px-2 py-1 rounded-full border border-gray-300 hover:bg-gray-50">Kunjungi Toko</button>
-                  </div>
-                  <div className="text-sm text-green-600 font-semibold flex items-center">
-                    {order.deliveryStatus}
-                    {order.isRated && <span className="ml-2 text-gray-500">TELAH DINILAI</span>}
-                  </div>
-                </div>
+        {/* Info Promo di Atas Tabel */}
+        <div className="bg-red-50 p-3 flex items-center justify-between text-red-600 text-sm font-semibold">
+          <span className="flex items-center">
+            Promo Menarik Hari Ini!
+            <Info size={16} className="ml-1" />
+          </span>
+          <button className="text-blue-600 hover:underline" onClick={() => displayMessageBox("Fungsi 'Lihat Detail Promo' akan diimplementasikan!")}>Lihat Detail</button>
+        </div>
 
-                {/* Detail Produk */}
-                {order.products.map((product, pIdx) => (
-                  <div key={pIdx} className="flex items-start mb-3">
-                    <img
-                      src={product.imageUrl}
-                      alt={product.name}
-                      className="w-20 h-20 object-contain mr-3 border rounded"
-                    />
-                    <div className="flex-1">
-                      <p className="text-gray-800 font-medium line-clamp-2">{product.name}</p>
-                      {product.variant && <p className="text-sm text-gray-500">Variasi: {product.variant}</p>}
-                      <p className="text-sm text-gray-600">x{product.qty}</p>
-                    </div>
-                    <p className="text-gray-800 font-semibold">
-                      Rp {product.price.toLocaleString('id-ID')}
-                    </p>
-                  </div>
-                ))}
-
-                {/* Total Pesanan dan Aksi */}
-                <div className="flex justify-between items-center pt-3 border-t">
-                  <p className="text-gray-700 font-semibold">Total Pesanan:</p>
-                  <p className="text-red-600 font-bold text-lg">
-                    Rp {order.total.toLocaleString('id-ID')}
-                  </p>
-                </div>
-                <div className="flex justify-end space-x-2 mt-3">
-                  <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">Beli Lagi</button>
-                  <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">Hubungi Penjual</button>
-                  {!order.isRated && (
-                    <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">Tampilkan Penilaian Toko</button>
-                  )}
-                  {order.isRated && (
-                    <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors" disabled>Sudah Dinilai</button>
-                  )}
-                </div>
+        {/* Daftar Item Keranjang */}
+        {cartItems.length > 0 ? (
+          cartItems.map(shop => (
+            <div key={shop.id} className="border-b border-gray-200 last:border-b-0">
+              {/* Header Toko */}
+              <div className="p-4 flex items-center space-x-2 border-b border-gray-100 bg-gray-50">
+                <input
+                  type="checkbox"
+                  className="form-checkbox text-red-600 rounded"
+                  checked={shop.products.every(p => p.selected)} // Menggunakan state 'selected' dari produk
+                  onChange={(e) => toggleShopSelection(shop.id, e.target.checked)} // Menggunakan fungsi dari context
+                />
+                {shop.isMall && (
+                  <span className="bg-red-600 text-white px-2 py-0.5 text-xs font-bold rounded-sm">Mall.ORI</span>
+                )}
+                <span className="font-semibold text-gray-800">{shop.shopName}</span>
+                {shop.shopName && ( // Hanya tampilkan tombol chat jika ada nama toko
+                  <Link to="#" className="text-red-600 hover:text-red-700" onClick={() => displayMessageBox("Fungsi 'Chat Toko' akan diimplementasikan!")}>
+                    <img src="https://img.icons8.com/ios-filled/24/null/mail.png" alt="Chat" className="w-5 h-5" />
+                  </Link>
+                )}
+                <button className="text-gray-500 hover:text-gray-700 ml-auto" onClick={() => displayMessageBox("Opsi 'Lebih Lanjut' akan diimplementasikan!")}>
+                  <ChevronDown size={20} />
+                </button>
               </div>
-            ))
-          ) : (
-            <div className="text-center text-gray-500 py-10">
-              Tidak ada pesanan di tab ini.
-            </div>
-          )}
-        </div>
 
-        <div className="mt-auto p-4 border-t border-gray-200 text-center">
-          <Link
-            to="/"
-            className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors inline-flex items-center"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 mr-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+              {/* Produk dalam Toko */}
+              {shop.products.map(product => (
+                <div key={product.itemId} className="p-4 flex items-center border-b border-gray-100 last:border-b-0">
+                  <div className="w-1/12 flex-shrink-0">
+                    <input
+                      type="checkbox"
+                      className="form-checkbox text-red-600 rounded"
+                      checked={product.selected} // Menggunakan state 'selected' dari produk
+                      onChange={() => toggleItemSelection(shop.id, product.itemId)} // Menggunakan fungsi dari context
+                    />
+                  </div>
+                  <div className="w-4/12 md:w-5/12 flex-grow flex items-center">
+                    <img src={product.imageUrl} alt={product.name} className="w-20 h-20 object-contain mr-3 border rounded" />
+                    <div>
+                      <p className="text-gray-800 font-medium line-clamp-2">{product.name}</p>
+                      {product.variant && (
+                        <span className="text-sm text-gray-500 flex items-center group">
+                          {product.variant} <ChevronDown size={14} className="ml-1 text-gray-400 group-hover:text-gray-600" />
+                        </span>
+                      )}
+                      {product.hasDiscount && (
+                        <span className="bg-red-100 text-red-600 text-xs font-semibold px-1 py-0.5 rounded mt-1 inline-block">
+                          Diskon {product.discountPercent}%
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="w-2/12 hidden md:block text-center">
+                    {product.hasDiscount && (
+                      <p className="text-gray-500 text-xs line-through">{formatCurrency(product.originalPrice)}</p>
+                    )}
+                    <p className="text-gray-800 font-semibold">{formatCurrency(product.currentPrice)}</p>
+                  </div>
+                  <div className="w-1/12 flex justify-center items-center">
+                    <div className="flex items-center border border-gray-300 rounded-sm">
+                      <button
+                        className="p-1 text-gray-600 hover:bg-gray-100"
+                        onClick={() => updateQuantity(shop.id, product.itemId, -1)} // Menggunakan fungsi dari context
+                      >
+                        <Minus size={16} />
+                      </button>
+                      <input
+                        type="text"
+                        value={product.qty}
+                        readOnly
+                        className="w-10 text-center border-l border-r border-gray-300 py-1 text-sm outline-none"
+                      />
+                      <button
+                        className="p-1 text-gray-600 hover:bg-gray-100"
+                        onClick={() => updateQuantity(shop.id, product.itemId, 1)} // Menggunakan fungsi dari context
+                      >
+                        <Plus size={16} />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="w-2/12 text-right">
+                    <p className="text-red-600 font-semibold">{formatCurrency(product.currentPrice * product.qty)}</p>
+                  </div>
+                  <div className="w-1/12 text-right">
+                    <button
+                      className="text-gray-500 hover:text-red-600"
+                      onClick={() => removeItem(shop.id, product.itemId)} // Menggunakan fungsi dari context
+                    >
+                      <Trash2 size={20} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+              {/* Voucher Toko */}
+              {shop.hasShopVoucher && (
+                <div className="p-4 flex items-center justify-between border-b border-gray-100">
+                  <span className="text-blue-600 flex items-center">
+                    <img src="https://img.icons8.com/ios-filled/20/null/discount.png" alt="Voucher" className="mr-2 h-5 w-5" />
+                    Tambahkan Voucher Toko
+                  </span>
+                  <ChevronRight size={20} className="text-blue-600" />
+                </div>
+              )}
+              {/* Gratis Ongkir */}
+              <div className="p-4 flex items-center justify-between">
+                <div className="text-green-600 flex items-center">
+                  <img src="/images/delivery-truck.png" alt="Free Shipping" className="h-5 w-5 mr-2" />
+                  Gratis Ongkir s/d Rp40.000 dengan min. belanja Rp0; Gratis Ongkir s/d Rp500.000 dengan min. belanja Rp300.000
+                </div>
+                <Link to="#" className="text-blue-600 hover:underline text-sm" onClick={() => displayMessageBox("Fungsi 'Pelajari lebih lanjut ongkir' akan diimplementasikan!")}>Pelajari lebih lanjut</Link>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="text-center text-gray-500 py-10">Keranjang Anda kosong.</div>
+        )}
+      </div>
+
+      {/* Bagian Bawah: Pilih Semua, Hapus, Total, Checkout */}
+      <div className="sticky bottom-0 w-full bg-white border-t border-gray-200 shadow-lg py-4 px-4 md:px-8">
+        <div className="max-w-4xl mx-auto flex flex-wrap justify-between items-center">
+          {/* Kiri: Pilih Semua, Hapus, Pindahkan */}
+          <div className="flex items-center space-x-4 mb-4 md:mb-0 w-full md:w-auto">
+            <input
+              type="checkbox"
+              className="form-checkbox text-red-600 rounded"
+              checked={selectAllFooter}
+              onChange={handleSelectAllFooter}
+            />
+            <span className="text-gray-800">Pilih Semua ({totalProductsSelected})</span>
+            <button className="text-gray-500 hover:text-red-600 flex items-center ml-4" onClick={handleDeleteSelectedItems}>
+              <Trash2 size={20} className="mr-1" /> Hapus
+            </button>
+            <button className="text-blue-600 hover:underline hidden md:block" onClick={() => displayMessageBox("Fungsi 'Pindahkan ke Favorit' akan diimplementasikan!")}>Pindahkan ke Favorit Saya</button>
+          </div>
+
+          {/* Kanan: Total & Checkout */}
+          <div className="flex items-center justify-end w-full md:w-auto">
+            <div className="flex flex-col items-end mr-4">
+              <div className="flex items-center text-gray-800 font-semibold mb-1">
+                Total ({totalProductsSelected} produk):
+                <span className="ml-2 text-red-600 font-bold text-xl">{formatCurrency(totalPrice)}</span>
+              </div>
+              <div className="flex items-center text-gray-500 text-xs">
+                <img src="https://placehold.co/16x16/FFD700/000000?text=K" alt="Koin" className="mr-1" />
+                Tukarkan 80 Koin Hawaii
+                <ChevronRight size={14} className="ml-1" />
+              </div>
+            </div>
+            <button
+              className="px-6 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors"
+              onClick={() => navigate('/checkout')} // Menghubungkan ke halaman Checkout
+              disabled={totalProductsSelected === 0} // Disable jika tidak ada produk terpilih
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-            Kembali ke Beranda
-          </Link>
+              Checkout
+            </button>
+          </div>
         </div>
       </div>
 

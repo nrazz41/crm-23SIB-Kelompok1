@@ -50,14 +50,14 @@ const PromoPage = () => {
   return (
     <div className="w-full flex flex-col items-center min-h-screen bg-gray-100">
       {/* Header (Mirroring HomePage header for consistency) */}
-      <div className="w-full bg-red-600 py-3 px-4 md:px-8 shadow-md">
+      <div className="w-full bg-white py-3 px-4 md:px-8 shadow-md"> 
         <div className="max-w-7xl mx-auto flex items-center justify-between space-x-4">
-          <div className="flex items-center space-x-2 text-white font-bold text-2xl">
+          <div className="flex items-center space-x-2 text-red-600 font-bold text-2xl"> 
             <Link to="/">
               <img
                 src="/images/logo hawai.png"
                 alt="Logo Hawai"
-                className="w-11 h-11 rounded-full border-2 border-white"
+                className="w-11 h-11 rounded-full border-2 border-red-600"
               />
             </Link>
             <span>HAWAII</span>
@@ -67,23 +67,23 @@ const PromoPage = () => {
             <input
               type="text"
               placeholder="Cari kebutuhan sehari-hari..."
-              className="w-full pl-4 pr-10 py-2.5 rounded-full bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-inner"
+              className="w-full pl-4 pr-10 py-2.5 rounded-full bg-gray-100 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-inner"
               disabled // Non-fungsional di halaman promo
             />
             <Search size={20} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" />
           </div>
 
           <div className="flex items-center space-x-2">
-            <Link to="/notification" className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-gray-700 shadow-md hover:bg-gray-100 transition">
+            <Link to="/notification" className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-red-600 shadow-md hover:bg-gray-200 transition"> {/* UBAH: bg-white text-gray-700 menjadi bg-gray-100 text-red-600 */}
               <Bell size={20} />
             </Link>
-            <Link to="/promo-page" className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-gray-700 shadow-md hover:bg-gray-100 transition">
+            <Link to="/promo-page" className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-red-600 shadow-md hover:bg-gray-200 transition"> {/* UBAH: bg-white text-gray-700 menjadi bg-gray-100 text-red-600 */}
               <Percent size={20} />
             </Link>
-            <Link to="/cart" className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-gray-700 shadow-md hover:bg-gray-100 transition">
+            <Link to="/cart" className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-red-600 shadow-md hover:bg-gray-200 transition"> {/* UBAH: bg-white text-gray-700 menjadi bg-gray-100 text-red-600 */}
               <ShoppingCart size={20} />
             </Link>
-            <Link to="/signin" className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-gray-700 shadow-md hover:bg-gray-100 transition">
+            <Link to="/signin" className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-red-600 shadow-md hover:bg-gray-200 transition"> {/* UBAH: bg-white text-gray-700 menjadi bg-gray-100 text-red-600 */}
               <User size={20} />
             </Link>
           </div>
