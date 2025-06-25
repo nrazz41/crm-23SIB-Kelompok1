@@ -1,10 +1,25 @@
 // src/App.jsx
-// Hapus import React, { useState } karena tidak digunakan langsung di sini
-import { Routes, Route } from "react-router-dom"; 
+import { Routes, Route } from "react-router-dom";
 
-// Import komponen layout
+// Layout
 import MainLayout from "./assets/components/MainLayout";
 import AuthLayout from "./assets/components/AuthLayout";
+
+// Pages - Auth & Umum
+import HalamanUtama from "./assets/Pages/HalamanUtama";
+import LoginPage from "./assets/Pages/LoginPage";
+import RegisterPage from "./assets/Pages/RegisterPage";
+import FAQPage from "./assets/Pages/FAQPage";
+import FormPengaduan from "./assets/Pages/FormPengaduan";
+import NotificationPage from "./assets/Pages/NotificationPage";
+import CartPage from "./assets/Pages/CartPage";
+import PromoPage from "./assets/Pages/PromoPage";
+import CategoryPage from "./assets/Pages/CategoryPage";
+import OrderDetailPage from "./assets/pages/OrderDetailPage";
+import CheckoutPage from "./assets/pages/CheckoutPage";
+import ChatPage from "./assets/Pages/ChatPage";
+
+// Pages - Fitur Internal
 import Dashboard from "./assets/Pages/Dashboard";
 import CustomerManagement from "./assets/Pages/CustomerManagement";
 import SalesManagement from "./assets/Pages/SalesManagement";
@@ -14,27 +29,21 @@ import PromoPelanggan from "./assets/Pages/PromoPelanggan";
 import CustomerFeedbackManager from "./assets/Pages/ManajemenMasukanPelanggan";
 import SalesHistoryPage from "./assets/Pages/RiwayatPenjualan";
 import DataPelanggan from "./assets/Pages/DataPelanggan";
-import HalamanUtama from "./assets/Pages/HalamanUtama";
-import LoginPage from "./assets/Pages/LoginPage"; // Halaman Login
-import RegisterPage from "./assets/Pages/RegisterPage"; // Halaman Registrasi
-import FAQPage from "./assets/Pages/FAQPage";
-import FormPengaduan from "./assets/Pages/FormPengaduan";
-import NotificationPage from "./assets/Pages/NotificationPage";
-import CartPage from "./assets/Pages/CartPage";
-import PromoPage from "./assets/Pages/PromoPage";
-import CategoryPage from "./assets/Pages/CategoryPage";
+import ManajemenPenjualanPage from "./assets/Pages/ManajemenPenjualanPage";
+import ArticleDashboard from "./assets/Pages/ArticleDashboard";
+
+// Context
+import { CartProvider } from './assets/contexts/CartContext';
 
 function App() {
   return (
     <CartProvider>
       <Routes>
-        {/* Rute untuk halaman yang tidak memerlukan layout penuh (misal: halaman utama, login, register) */}
+        {/* Halaman-halaman umum (tanpa layout utama) */}
         <Route element={<AuthLayout />}>
-          <Route path="/" element={<HalamanUtama />} />{" "}
-          {/* Halaman utama sebagai root */}
-          <Route path="/signin" element={<LoginPage />} /> {/* Halaman Login */}
-          <Route path="/signup" element={<RegisterPage />} />{" "}
-          {/* Halaman Registrasi */}
+          <Route path="/" element={<HalamanUtama />} />
+          <Route path="/signin" element={<LoginPage />} />
+          <Route path="/signup" element={<RegisterPage />} />
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/form-pengaduan" element={<FormPengaduan />} />
           <Route path="/notification" element={<NotificationPage />} />
@@ -46,25 +55,22 @@ function App() {
           <Route path="/chat" element={<ChatPage />} />
         </Route>
 
-      <Route element={<MainLayout />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/Pelanggan" element={<CustomerManagement />} />
-        <Route path="/sales" element={<SalesManagement />} />
-        <Route path="/product" element={<ProductManagement />} />
-        <Route path="/complaint-form" element={<ComplaintForm />} />
-        <Route path="/promo" element={<PromoPelanggan />} />
-        <Route path="/masukan" element={<CustomerFeedbackManager />} />
-        <Route path="/riwayat" element={<SalesHistoryPage />} />
-        <Route path="/data" element={<DataPelanggan />} />
-        <Route path="/" element={<Dashboard />} />
-         <Route path="/Pelanggan" element={<CustomerManagement />} />
-         <Route path="/Produk" element={<ProductManagement />} />
-         <Route path="/Penjualan" element={<ManajemenPenjualanPage />} />
-         <Route path="/artikel" element={< ArticleDashboard/>} />
-         
-         
-      </Route>
-    </Routes>
+        {/* Halaman internal (butuh MainLayout) */}
+        <Route element={<MainLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/Pelanggan" element={<CustomerManagement />} />
+          <Route path="/sales" element={<SalesManagement />} />
+          <Route path="/product" element={<ProductManagement />} />
+          <Route path="/complaint-form" element={<ComplaintForm />} />
+          <Route path="/promo" element={<PromoPelanggan />} />
+          <Route path="/masukan" element={<CustomerFeedbackManager />} />
+          <Route path="/riwayat" element={<SalesHistoryPage />} />
+          <Route path="/data" element={<DataPelanggan />} />
+          <Route path="/Penjualan" element={<ManajemenPenjualanPage />} />
+          <Route path="/artikel" element={<ArticleDashboard />} />
+        </Route>
+      </Routes>
+    </CartProvider>
   );
 }
 
