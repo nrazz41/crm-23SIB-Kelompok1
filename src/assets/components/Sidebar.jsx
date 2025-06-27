@@ -25,7 +25,7 @@ const HAWAII_LOGO_URL = 'https://bajo.jumbomark.com/labels/JID2022057238';
 
 const menuItems = [
   { name: 'Dashboard', icon: <LayoutDashboard />, path: '/dashboard' },
-  { name: 'Produk', icon: <Box />, path: '/produk' },
+  { name: 'Produk', icon: <Box />, path: '/product' },
   { name: 'Pelanggan', icon: <Users />, path: '/pelanggan' },
   { name: 'Penjualan', icon: <ShoppingCart />, path: '/penjualan' },
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
