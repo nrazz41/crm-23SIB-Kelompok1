@@ -1,10 +1,11 @@
 // src/assets/components/Header.jsx
 import React, { useState } from 'react';
-import { ChevronDown, Globe, User, MapPin } from 'lucide-react'; // Hapus Package karena Pick up dihapus
-import { useLocation } from 'react-router-dom';
+import { ChevronDown, Globe, User, MapPin } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const Header = () => {
   const location = useLocation();
+  const navigate = useNavigate(); // Inisialisasi useNavigate
 
   const [selectedCountry, setSelectedCountry] = useState('IND');
   const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
@@ -15,7 +16,6 @@ const Header = () => {
   // --- Logika untuk Admin/Customer ---
   const [isLoggedIn, setIsLoggedIn] = useState(true); // Simulasi: user sedang login
   const [userRole, setUserRole] = useState('admin'); // Simulasi: role user (bisa 'admin' atau 'customer')
-  // const [userRole, setUserRole] = useState('customer'); // Coba ini untuk tampilan customer
   // --- Akhir Logika untuk Admin/Customer ---
 
   // Daftar negara
@@ -39,7 +39,11 @@ const Header = () => {
     if (pathname === '/') {
         return 'Promosi'; // Default untuk halaman root
     }
-    
+
+    // Handle specific paths for display names
+    if (pathname === '/laporan-penjualan') return 'Laporan Penjualan';
+    if (pathname === '/profile') return 'Profil Pengguna'; // Tambahkan ini
+
     const name = pathSegments[0].replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     return name;
   };
@@ -49,21 +53,24 @@ const Header = () => {
   // Close all dropdowns when clicking outside
   React.useEffect(() => {
     const handleClickOutside = (event) => {
-      // Pastikan dropdown tidak tertutup saat klik di dalamnya
       if (isCountryDropdownOpen && !event.target.closest('.country-dropdown')) {
         setIsCountryDropdownOpen(false);
       }
       if (isAddressDropdownOpen && !event.target.closest('.address-dropdown')) {
         setIsAddressDropdownOpen(false);
       }
-      // Pickup dropdown sudah dihapus, jadi tidak perlu lagi dicek
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isCountryDropdownOpen, isAddressDropdownOpen]); // Hapus isPickupDropdownOpen dari dependency array
+  }, [isCountryDropdownOpen, isAddressDropdownOpen]);
+
+  // Fungsi untuk navigasi ke halaman profil
+  const handleProfileClick = () => {
+    navigate('/profile');
+  };
 
   return (
     <header className="bg-[#B82329] text-white py-2 px-6 flex justify-between items-center text-sm sticky top-0 w-full z-50 shadow-md">
@@ -96,7 +103,7 @@ const Header = () => {
             </div>
           )}
         </div>
-        
+
         {/* Nama Halaman Aktif */}
         <div className="font-semibold text-base ml-2">
           {currentPage}
@@ -139,7 +146,7 @@ const Header = () => {
             // Tampilan untuk Admin
             <div
               className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
-              onClick={() => alert('Akun Admin diklik!')}
+              onClick={handleProfileClick} // Ubah ini untuk navigasi ke profil
             >
               <span>Admin</span>
               <User className="w-6 h-6 p-1 rounded-full bg-white text-[#B82329]" />
@@ -148,7 +155,7 @@ const Header = () => {
             // Tampilan untuk Customer (atau role lain yang bukan admin)
             <div
               className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
-              onClick={() => alert('Akun Customer diklik!')}
+              onClick={handleProfileClick} // Ubah ini untuk navigasi ke profil
             >
               <span>{/* Anda bisa menampilkan nama user di sini jika ada */}Halo, Pengguna!</span>
               <User className="w-6 h-6 p-1 rounded-full bg-white text-[#B82329]" />
@@ -158,7 +165,7 @@ const Header = () => {
           // Tampilan jika belum login (misalnya tombol Sign In)
           <div
             className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={() => alert('Silakan Sign In!')}
+            onClick={() => navigate('/signin')} // Asumsi ada rute /signin
           >
             <User className="w-4 h-4" />
             <span>Sign In</span>
