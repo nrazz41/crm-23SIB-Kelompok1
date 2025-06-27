@@ -1,10 +1,9 @@
-// src/assets/contexts/CartContext.jsx
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
 // Membuat Context
 const CartContext = createContext();
 
-// Dummy data produk yang tersedia
+// Dummy data produk yang tersedia (Sudah oke, tidak perlu diubah)
 const availableProducts = [
   {
     itemId: "item001",
@@ -30,7 +29,7 @@ const availableProducts = [
     itemId: "item002",
     name: "Indomie Goreng Jumbo",
     variant: "Rasa: Original",
-    originalPrice: 3500, // Pastikan ada
+    originalPrice: 3500,
     currentPrice: 3000,
     imageUrl: "https://placehold.co/80x80/8B0000/FFFFFF?text=Indomie",
     hasDiscount: true,
@@ -40,7 +39,7 @@ const availableProducts = [
     itemId: "item004",
     name: "Kopi Kapal Api Special Mix 10 Sachet",
     variant: "Isi: 10 sachet",
-    originalPrice: 15000, // Pastikan ada
+    originalPrice: 15000,
     currentPrice: 12500,
     imageUrl: "https://placehold.co/80x80/8B4513/FFFFFF?text=Kopi",
     hasDiscount: true,
@@ -51,24 +50,32 @@ const availableProducts = [
     name: "Biaya Proteksi Barang Elektronik (Opsional)",
     variant: null,
     currentPrice: 1700,
-    originalPrice: 1700, // Penting: pastikan ini ada
+    originalPrice: 1700,
     imageUrl: "https://placehold.co/80x80/cccccc/000000?text=Proteksi",
-    shopName: null,
+    shopName: null, // Aslinya tidak ada di availableProducts
     isProtection: true,
     hasDiscount: false,
     discountPercent: 0,
   }
 ];
 
-
 // CartProvider Component
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(() => {
     // Memuat dari localStorage jika ada
-    const savedCart = localStorage.getItem('hawaiiCart');
-    // Jika ada data tersimpan, parse. Jika tidak, gunakan dummy data awal.
-    // Ini adalah tempat data yang berpotensi rusak dimuat.
-    return savedCart ? JSON.parse(savedCart) : [
+    try {
+      const savedCart = localStorage.getItem('hawaiiCart');
+      if (savedCart) {
+        // Coba parse, jika gagal, kembalikan data default
+        return JSON.parse(savedCart);
+      }
+    } catch (error) {
+      console.error("Error parsing cart data from localStorage:", error);
+      // Fallback to default data if parsing fails
+    }
+
+    // Data dummy awal jika localStorage kosong atau error
+    return [
       {
         id: "shop001",
         shopName: "Sinar Jaya Swalayan",
@@ -91,10 +98,10 @@ export const CartProvider = ({ children }) => {
       },
       {
         id: "shop003",
-        shopName: null, // Tanpa nama toko untuk proteksi
+        shopName: null,
         isMall: false,
         products: [
-            { ...availableProducts.find(p => p.itemId === "item005"), qty: 1, selected: true },
+          { ...availableProducts.find(p => p.itemId === "item005"), qty: 1, selected: true },
         ],
         hasShopVoucher: false,
       }
@@ -103,40 +110,67 @@ export const CartProvider = ({ children }) => {
 
   // Menyimpan cartItems ke localStorage setiap kali berubah
   useEffect(() => {
-    localStorage.setItem('hawaiiCart', JSON.stringify(cartItems));
+    try {
+      localStorage.setItem('hawaiiCart', JSON.stringify(cartItems));
+    } catch (error) {
+      console.error("Error saving cart data to localStorage:", error);
+    }
   }, [cartItems]);
 
+  // FUNGSI UTAMA YANG DIPERBAIKI: Menambah item ke keranjang
+  const addItemToCart = (productToAdd, shopId, shopName, isMall = false, quantity = 1) => {
+    // Validasi input
+    if (!productToAdd || !productToAdd.itemId || quantity <= 0) {
+      console.error("Invalid product or quantity for addItemToCart.");
+      return;
+    }
 
-  // Fungsi untuk menambah item ke keranjang
-  const addItemToCart = (product, shopId, shopName, isMall = false) => {
+    // Pastikan produk yang akan ditambahkan ada di daftar `availableProducts`
+    const productData = availableProducts.find(p => p.itemId === productToAdd.itemId);
+    if (!productData) {
+      console.error(`Product with itemId ${productToAdd.itemId} not found in availableProducts.`);
+      return;
+    }
+    
+    // Perbarui state cart
     setCartItems(prevCartItems => {
+      // 1. Cari apakah toko sudah ada di keranjang
       const existingShopIndex = prevCartItems.findIndex(shop => shop.id === shopId);
-
-      // Cari product di availableProducts untuk memastikan memiliki semua properti yang dibutuhkan
-      const productToAdd = availableProducts.find(p => p.itemId === product.itemId);
-      if (!productToAdd) {
-        console.error("Produk tidak ditemukan di availableProducts:", product.itemId);
-        return prevCartItems; // Jangan tambahkan jika tidak ada di daftar produk yang valid
-      }
-
+      
+      // Jika toko sudah ada
       if (existingShopIndex > -1) {
         const updatedShops = [...prevCartItems];
-        const existingProductIndex = updatedShops[existingShopIndex].products.findIndex(p => p.itemId === product.itemId);
-
+        const shopToUpdate = { ...updatedShops[existingShopIndex] };
+        
+        // 2. Cari apakah produk sudah ada di toko tersebut
+        const existingProductIndex = shopToUpdate.products.findIndex(p => p.itemId === productToAdd.itemId);
+        
         if (existingProductIndex > -1) {
-          updatedShops[existingShopIndex].products[existingProductIndex].qty += 1;
+          // Jika produk sudah ada, perbarui kuantitasnya
+          const updatedProducts = [...shopToUpdate.products];
+          updatedProducts[existingProductIndex] = {
+            ...updatedProducts[existingProductIndex],
+            qty: updatedProducts[existingProductIndex].qty + quantity,
+          };
+          shopToUpdate.products = updatedProducts;
         } else {
-          updatedShops[existingShopIndex].products.push({ ...productToAdd, qty: 1, selected: true });
+          // Jika produk belum ada, tambahkan produk baru ke toko
+          shopToUpdate.products = [
+            ...shopToUpdate.products,
+            { ...productData, qty: quantity, selected: true },
+          ];
         }
+        updatedShops[existingShopIndex] = shopToUpdate;
         return updatedShops;
       } else {
+        // Jika toko belum ada, tambahkan toko baru beserta produknya
         return [
           ...prevCartItems,
           {
             id: shopId,
             shopName: shopName,
             isMall: isMall,
-            products: [{ ...productToAdd, qty: 1, selected: true }],
+            products: [{ ...productData, qty: quantity, selected: true }],
             hasShopVoucher: false,
           }
         ];
@@ -259,20 +293,22 @@ export const CartProvider = ({ children }) => {
 
   const { totalProductsSelected, totalPrice } = calculateTotals();
 
+  // Nilai yang akan disediakan oleh Context
+  const contextValue = {
+    cartItems,
+    addItemToCart,
+    updateQuantity,
+    removeItem,
+    toggleItemSelection,
+    toggleShopSelection,
+    toggleSelectAll,
+    getSelectedCartItems,
+    totalProductsSelected,
+    totalPrice
+  };
 
   return (
-    <CartContext.Provider value={{
-      cartItems,
-      addItemToCart,
-      updateQuantity,
-      removeItem,
-      toggleItemSelection,
-      toggleShopSelection,
-      toggleSelectAll,
-      getSelectedCartItems,
-      totalProductsSelected,
-      totalPrice
-    }}>
+    <CartContext.Provider value={contextValue}>
       {children}
     </CartContext.Provider>
   );

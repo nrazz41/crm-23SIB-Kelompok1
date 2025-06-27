@@ -34,6 +34,7 @@ import ArticleDashboard from "./assets/Pages/ArticleDashboard";
 
 // Context
 import { CartProvider } from './assets/contexts/CartContext';
+import ProductDetailPage from "./assets/Pages/ProductDetailPage";
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
           <Route path="/order/:id" element={<OrderDetailPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/chat" element={<ChatPage />} />
+          <Route path="/product/:id" element={<ProductDetailPage />} />
         </Route>
 
         {/* Halaman internal (butuh MainLayout) */}
