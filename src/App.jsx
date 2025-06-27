@@ -15,6 +15,7 @@ import NotificationPage from "./assets/Pages/NotificationPage";
 import CartPage from "./assets/Pages/CartPage";
 import PromoPage from "./assets/Pages/PromoPage";
 import CategoryPage from "./assets/Pages/CategoryPage";
+import OrderDetailPage from "./assets/Pages/OrderDetailPage";
 import CheckoutPage from "./assets/pages/CheckoutPage";
 import ChatPage from "./assets/Pages/ChatPage";
 
@@ -53,6 +54,7 @@ function App() {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/promo-page" element={<PromoPage />} />
           <Route path="/category/:categoryName" element={<CategoryPage />} />
+          <Route path="/order/:id" element={<OrderDetailPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/product/:id" element={<ProductDetailPage />} />
