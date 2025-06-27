@@ -1,8 +1,32 @@
 import React, { useState, useEffect } from "react";
-import { Search, Plus, Trash2, Edit3, Filter } from "lucide-react";
+import { Search, Plus, Trash2, Edit3, Filter, Award } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const ManajemenPelangganPage = () => {
+  // --- Theme Colors ---
+  const primaryRed = '#B82329'; // Main red color for theme
+  const goldColor = '#DAA520';
+  const silverColor = '#C0C0C0';
+  const classicColor = '#CD7F32'; // Color for Classic membership
+
+  // --- Membership Levels Definition (Reordered and Bronze removed) ---
+  const membershipLevels = [
+    { level: 'Classic', color: classicColor, badgeBg: '#CD7F32', badgeText: 'text-white' },
+    { level: 'Silver', color: silverColor, badgeBg: '#C0C0C0', badgeText: 'text-gray-800' },
+    { level: 'Gold', color: goldColor, badgeBg: '#DAA520', badgeText: 'text-white' },
+    { level: 'Platinum', color: primaryRed, badgeBg: '#B82329', badgeText: 'text-white' },
+  ];
+
+  // Helper function for membership level badge classes
+  const getMembershipLevelClasses = (level) => {
+    const membership = membershipLevels.find(m => m.level === level);
+    if (membership) {
+      return `bg-[${membership.badgeBg}] ${membership.badgeText} font-bold`;
+    }
+    return 'bg-gray-200 text-gray-700';
+  };
+
+  // State for customer data and filters
   const [pelanggan, setPelanggan] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterMembership, setFilterMembership] = useState("");
@@ -23,42 +47,53 @@ const ManajemenPelangganPage = () => {
   const itemsPerPage = 8;
   const navigate = useNavigate();
 
+  // --- CUSTOM MESSAGE/CONFIRMATION BOX ---
+  const displayMessageBox = (message, type = 'alert', onConfirm = null) => {
+    const messageBox = document.createElement('div');
+    messageBox.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50';
+    messageBox.innerHTML = `
+      <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm mx-4 text-center">
+        <p class="text-lg text-gray-800 mb-4">${message}</p>
+        <div class="flex justify-center space-x-4">
+          ${type === 'confirm' ? `<button id="cancelMessageBox" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors">Batal</button>` : ''}
+          <button id="okMessageBox" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">OK</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(messageBox);
+
+    document.getElementById('okMessageBox').onclick = () => {
+      document.body.removeChild(messageBox);
+      if (type === 'confirm' && onConfirm) {
+        onConfirm();
+      }
+    };
+
+    if (type === 'confirm') {
+      document.getElementById('cancelMessageBox').onclick = () => {
+        document.body.removeChild(messageBox);
+      };
+    }
+  };
+
   useEffect(() => {
-    const memberships = ["Gold", "Silver", "Classic"];
     const statuses = ["Aktif", "Nonaktif"];
     const namaDepan = [
-      "Ahmad",
-      "Siti",
-      "Budi",
-      "Dewi",
-      "Rizky",
-      "Fitri",
-      "Agus",
-      "Putri",
-      "Joko",
-      "Lestari",
+      "Ahmad", "Siti", "Budi", "Dewi", "Rizky", "Fitri", "Agus", "Putri", "Joko", "Lestari",
     ];
     const namaBelakang = [
-      "Santoso",
-      "Aminah",
-      "Saputra",
-      "Wulandari",
-      "Faisal",
-      "Permata",
-      "Hidayat",
-      "Rahma",
-      "Gunawan",
-      "Sari",
+      "Santoso", "Aminah", "Saputra", "Wulandari", "Faisal", "Permata", "Hidayat", "Rahma", "Gunawan", "Sari",
     ];
 
     setPelanggan(
       Array.from({ length: 100 }, (_, i) => {
         const idNum = i + 1;
         const pad = idNum.toString().padStart(3, "0");
-        const randomFirst =
-          namaDepan[Math.floor(Math.random() * namaDepan.length)];
-        const randomLast =
-          namaBelakang[Math.floor(Math.random() * namaBelakang.length)];
+        const randomFirst = namaDepan[Math.floor(Math.random() * namaDepan.length)];
+        const randomLast = namaBelakang[Math.floor(Math.random() * namaBelakang.length)];
+
+        // Assign membership based on the new order and number of levels
+        const assignedMembership = membershipLevels[i % membershipLevels.length].level;
 
         return {
           id: `C${pad}`,
@@ -66,10 +101,10 @@ const ManajemenPelangganPage = () => {
           email: `pelanggan${idNum}@mail.com`,
           phone: `0812${Math.floor(1000000 + Math.random() * 8999999)}`,
           address: `Jl. Contoh Alamat No. ${idNum}`,
-          membership: memberships[i % 3],
+          membership: assignedMembership,
           status: statuses[i % 2],
           totalTransaction: Math.floor(Math.random() * 20000000 + 1000000),
-          joinDate: `202${i % 5}-0${(i % 9) + 1}-15`,
+          joinDate: `202${i % 5}-0${(i % 9) + 1}-${(i % 28) + 1}`,
           notes: `Catatan pelanggan ke-${idNum}`,
         };
       })
@@ -77,9 +112,10 @@ const ManajemenPelangganPage = () => {
   }, []);
 
   const handleDelete = (id) => {
-    if (window.confirm("Yakin ingin menghapus data pelanggan ini?")) {
+    displayMessageBox("Yakin ingin menghapus data pelanggan ini?", 'confirm', () => {
       setPelanggan((prev) => prev.filter((p) => p.id !== id));
-    }
+      displayMessageBox("Pelanggan berhasil dihapus!");
+    });
   };
 
   const handleEdit = (cust) => {
@@ -104,30 +140,26 @@ const ManajemenPelangganPage = () => {
 
   const handleFormSubmit = () => {
     if (isEditing) {
-      setPelanggan((prev) =>
-        prev.map((p) => (p.id === formData.id ? formData : p))
-      );
+      setPelanggan((prev) => prev.map((p) => (p.id === formData.id ? formData : p)));
+      displayMessageBox("Pelanggan berhasil diperbarui!");
     } else {
       const newId = `C${(pelanggan.length + 1).toString().padStart(3, "0")}`;
       setPelanggan((prev) => [
         ...prev,
-        {
-          ...formData,
-          id: newId,
-          totalTransaction: 0,
-          joinDate: new Date().toISOString().slice(0, 10),
-        },
+        { ...formData, id: newId, totalTransaction: 0, joinDate: new Date().toISOString().slice(0, 10) },
       ]);
+      displayMessageBox("Pelanggan berhasil ditambahkan!");
     }
     setShowFormModal(false);
   };
 
-  const countClassic = pelanggan.filter(
-    (p) => p.membership === "Classic"
-  ).length;
-  const countSilver = pelanggan.filter((p) => p.membership === "Silver").length;
-  const countGold = pelanggan.filter((p) => p.membership === "Gold").length;
-  // Urutkan pelanggan berdasarkan tanggal bergabung (joinDate) dari terbaru ke terlama
+  // Counting for each membership dynamically
+  const membershipCounts = membershipLevels.reduce((acc, level) => {
+    acc[level.level] = pelanggan.filter(p => p.membership === level.level).length;
+    return acc;
+  }, {});
+
+
   const sortedPelanggan = [...pelanggan].sort(
     (a, b) => new Date(b.joinDate) - new Date(a.joinDate)
   );
@@ -152,35 +184,22 @@ const ManajemenPelangganPage = () => {
       <div className="flex justify-between items-center px-6 py-4 mb-8 bg-white text-gray-800 rounded-xl shadow-lg border-b-4 border-[#B82329]">
         <h2
           className="text-3xl font-extrabold tracking-wide"
-          style={{ color: "#B82329" }}
+          style={{ color: primaryRed }}
         >
           Manajemen Pelanggan
         </h2>
       </div>
 
-      {/* Statistik */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 flex justify-between items-center">
-          <div>
-            <h3 className="text-sm text-gray-500">Membership Classic</h3>
-            <p className="text-2xl font-bold text-gray-700">{countClassic}</p>
-          </div>
-          <span className="text-gray-400 text-xl">👤</span>
-        </div>
-        <div className="bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 flex justify-between items-center">
-          <div>
-            <h3 className="text-sm text-gray-500">Membership Silver</h3>
-            <p className="text-2xl font-bold text-gray-700">{countSilver}</p>
-          </div>
-          <span className="text-gray-400 text-xl">👤</span>
-        </div>
-        <div className="bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 flex justify-between items-center">
-          <div>
-            <h3 className="text-sm text-gray-500">Membership Gold</h3>
-            <p className="text-2xl font-bold text-gray-700">{countGold}</p>
-          </div>
-          <span className="text-gray-400 text-xl">👤</span>
-        </div>
+      {/* Membership Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {membershipLevels.map((level) => (
+          <Card
+            key={level.level}
+            title={`Membership ${level.level}`}
+            count={membershipCounts[level.level] || 0}
+            color={level.color}
+          />
+        ))}
       </div>
 
       {/* Toolbar */}
@@ -198,7 +217,8 @@ const ManajemenPelangganPage = () => {
         <div className="flex gap-2">
           <button
             onClick={handleAdd}
-            className="px-5 py-2 bg-blue-600 text-white rounded-xl flex items-center hover:bg-blue-700 shadow"
+            className="px-5 py-2 rounded-xl flex items-center shadow hover:brightness-90"
+            style={{ backgroundColor: primaryRed, color: 'white' }}
           >
             <Plus size={18} className="mr-2" /> Tambah Pelanggan
           </button>
@@ -211,10 +231,10 @@ const ManajemenPelangganPage = () => {
         </div>
       </div>
 
-      {/* Tabel */}
+      {/* Table */}
       <div className="bg-white rounded-xl shadow overflow-x-auto">
         <table className="min-w-full text-sm text-left">
-          <thead className="bg-gray-100">
+          <thead className="bg-[#B82329] text-white">
             <tr>
               <th className="px-6 py-3">ID</th>
               <th className="px-6 py-3">Nama</th>
@@ -238,7 +258,11 @@ const ManajemenPelangganPage = () => {
                 <td className="px-6 py-4">{cust.name}</td>
                 <td className="px-6 py-4">{cust.email}</td>
                 <td className="px-6 py-4">{cust.phone}</td>
-                <td className="px-6 py-4">{cust.membership}</td>
+                <td className="px-6 py-4">
+                  <span className={`px-2 py-1 rounded-full text-xs ${getMembershipLevelClasses(cust.membership)}`}>
+                    {cust.membership}
+                  </span>
+                </td>
                 <td className="px-6 py-4">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -251,19 +275,19 @@ const ManajemenPelangganPage = () => {
                   </span>
                 </td>
                 <td className="px-6 py-4">
-                  Rp{cust.totalTransaction.toLocaleString()}
+                  Rp{cust.totalTransaction.toLocaleString('id-ID')}
                 </td>
                 <td className="px-6 py-4">{cust.joinDate}</td>
                 <td className="px-6 py-4 space-x-2 text-right">
                   <button
-                    onClick={() => handleEdit(cust)}
-                    className="text-yellow-500 hover:text-yellow-600"
+                    onClick={(e) => { e.stopPropagation(); handleEdit(cust); }}
+                    className="text-yellow-500 hover:text-yellow-600 p-1 rounded-md hover:bg-yellow-100 transition-colors"
                   >
                     <Edit3 size={16} />
                   </button>
                   <button
-                    onClick={() => handleDelete(cust.id)}
-                    className="text-red-500 hover:text-red-600"
+                    onClick={(e) => { e.stopPropagation(); handleDelete(cust.id); }}
+                    className="text-red-500 hover:text-red-600 p-1 rounded-md hover:bg-red-100 transition-colors"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -303,11 +327,13 @@ const ManajemenPelangganPage = () => {
         </div>
       </div>
 
-      {/* Modal Filter */}
+      {/* Filter Modal */}
       {showFilterModal && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-xl w-full max-w-sm shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">Filter Pelanggan</h2>
+            <h2 className="text-xl font-semibold mb-4" style={{ color: primaryRed }}>
+              Filter Pelanggan
+            </h2>
             <div className="space-y-4">
               <div>
                 <label className="block mb-1 text-sm font-medium text-gray-700">
@@ -319,9 +345,9 @@ const ManajemenPelangganPage = () => {
                   className="w-full border border-gray-300 p-2 rounded-lg"
                 >
                   <option value="">Semua</option>
-                  <option value="Gold">Gold</option>
-                  <option value="Silver">Silver</option>
-                  <option value="Classic">Classic</option>
+                  {membershipLevels.map(level => (
+                    <option key={level.level} value={level.level}>{level.level}</option>
+                  ))}
                 </select>
               </div>
               <div>
@@ -352,7 +378,8 @@ const ManajemenPelangganPage = () => {
               </button>
               <button
                 onClick={() => setShowFilterModal(false)}
-                className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+                className="px-4 py-2 text-white text-sm rounded-lg hover:brightness-90"
+                style={{ backgroundColor: primaryRed }} // Filter button to red
               >
                 Terapkan
               </button>
@@ -361,11 +388,11 @@ const ManajemenPelangganPage = () => {
         </div>
       )}
 
-      {/* Modal Form Tambah/Edit */}
+      {/* Add/Edit Form Modal */}
       {showFormModal && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-xl w-full max-w-md shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl font-semibold mb-4" style={{ color: primaryRed }}>
               {isEditing ? "Edit" : "Tambah"} Pelanggan
             </h2>
             <div className="space-y-3">
@@ -409,9 +436,9 @@ const ManajemenPelangganPage = () => {
                 }
               >
                 <option value="">Pilih Membership</option>
-                <option value="Gold">Gold</option>
-                <option value="Silver">Silver</option>
-                <option value="Classic">Classic</option>
+                {membershipLevels.map(level => (
+                  <option key={level.level} value={level.level}>{level.level}</option>
+                ))}
               </select>
               <select
                 className="w-full border p-2 rounded-lg"
@@ -442,7 +469,8 @@ const ManajemenPelangganPage = () => {
               </button>
               <button
                 onClick={handleFormSubmit}
-                className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+                className="px-4 py-2 text-white text-sm rounded-lg hover:brightness-90"
+                style={{ backgroundColor: primaryRed }} // Save button to red
               >
                 Simpan
               </button>
@@ -453,5 +481,17 @@ const ManajemenPelangganPage = () => {
     </main>
   );
 };
+
+// Komponen Card
+const Card = ({ title, count, color }) => (
+  <div className="bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 flex justify-between items-center border-b-4"
+    style={{ borderColor: color }}>
+    <div>
+      <h3 className="text-sm text-gray-500">{title}</h3>
+      <p className="text-2xl font-bold" style={{ color }}>{count}</p>
+    </div>
+    <Award className="w-10 h-10" style={{ color }} />
+  </div>
+);
 
 export default ManajemenPelangganPage;

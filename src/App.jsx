@@ -15,7 +15,7 @@ import NotificationPage from "./assets/Pages/NotificationPage";
 import CartPage from "./assets/Pages/CartPage";
 import PromoPage from "./assets/Pages/PromoPage";
 import CategoryPage from "./assets/Pages/CategoryPage";
-import OrderDetailPage from "./assets/pages/OrderDetailPage";
+import OrderDetailPage from "./assets/Pages/OrderDetailPage";
 import CheckoutPage from "./assets/pages/CheckoutPage";
 import ChatPage from "./assets/Pages/ChatPage";
 
@@ -31,6 +31,9 @@ import SalesHistoryPage from "./assets/Pages/RiwayatPenjualan";
 import DataPelanggan from "./assets/Pages/DataPelanggan";
 import ManajemenPenjualanPage from "./assets/Pages/ManajemenPenjualanPage";
 import ArticleDashboard from "./assets/Pages/ArticleDashboard";
+// Import halaman laporan yang baru
+import SalesReportsPage from "./assets/Pages/SalesReportsPage"; // PASTIKAN NAMA FILE DAN LOKASI BENAR
+import ProfilePage from "./assets/Pages/ProfilePage";
 
 // Context
 import { CartProvider } from './assets/contexts/CartContext';
@@ -70,6 +73,9 @@ function App() {
           <Route path="/data" element={<DataPelanggan />} />
           <Route path="/Penjualan" element={<ManajemenPenjualanPage />} />
           <Route path="/artikel" element={<ArticleDashboard />} />
+          {/* Rute baru untuk halaman Laporan Penjualan */}
+          <Route path="/laporan-penjualan" element={<SalesReportsPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
       </Routes>
     </CartProvider>

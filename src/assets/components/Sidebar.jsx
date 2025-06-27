@@ -1,5 +1,3 @@
-// src/assets/components/Sidebar.jsx
-
 import {
   LayoutDashboard,
   Users, // untuk pelanggan
@@ -28,7 +26,8 @@ const menuItems = [
   { name: 'Produk', icon: <Box />, path: '/product' },
   { name: 'Pelanggan', icon: <Users />, path: '/pelanggan' },
   { name: 'Penjualan', icon: <ShoppingCart />, path: '/penjualan' },
-  { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
+  // PERBAIKAN DI SINI: Sesuaikan path '/laporan' menjadi '/laporan-penjualan'
+  { name: 'Laporan', icon: <BarChart2 />, path: '/laporan-penjualan' },
   { name: 'Keluhan & Layanan', icon: <FileText />, path: '/masukan' },
   { name: 'Promo', icon: <Tag />, path: '/Promo' },
   { name: 'Artikel', icon: <Newspaper />, path: '/artikel' },
@@ -42,11 +41,12 @@ const Sidebar = () => {
   const location = useLocation();
 
   const isActive = (path) => {
+    // Check for exact match for the root path, if applicable (though dashboard is usually the root for internal)
     if (path === '/') {
       return location.pathname === '/';
     }
-    // Perbaikan: gunakan startsWith untuk mencocokkan path awal
-    // Misalnya, '/promo' akan cocok dengan '/promo/edit/123'
+    // Use startsWith to match the beginning of the path,
+    // useful for nested routes like /promo/edit/123
     return location.pathname.startsWith(path);
   };
 
@@ -106,8 +106,6 @@ const Sidebar = () => {
           ))}
         </nav>
       </div>
-
-    
 
       {/* Footer opsional */}
       <div className="mt-auto pt-6 text-center text-gray-500 text-xs">
