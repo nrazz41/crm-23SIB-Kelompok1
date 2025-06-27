@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Search, ShoppingCart, User, Percent, Bell } from "lucide-react";
-import allProductsData from '../data/productsData';
+import allProductsData from '../data/productsData'; // Pastikan data ini di-export dengan benar
 
+// ProductCard component (tidak ada perubahan, sudah benar)
 const ProductCard = ({ product }) => (
   <Link to={`/product/${product.id}`} className="block h-full">
     <div className="bg-white rounded-lg shadow-md overflow-hidden transform transition-transform duration-200 hover:scale-[1.02] border border-gray-100 flex flex-col h-full">
@@ -43,8 +44,10 @@ const CategoryPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const filteredProducts = categoryName === "Semua"
-    ? allProductsData
-    : allProductsData.filter(product => product.category.toLowerCase() === categoryName.toLowerCase());
+    ? allProductsData || [] // Fallback ke array kosong jika data undefined
+    : allProductsData?.filter(product => {
+        return product.category?.toLowerCase() === categoryName.toLowerCase();
+      }) || []; // Fallback ke array kosong jika hasil filter undefined
 
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;

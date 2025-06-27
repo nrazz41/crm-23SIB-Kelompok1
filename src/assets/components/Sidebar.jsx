@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
-const HAWAII_LOGO_URL = 'https://bajo.jumbomark.com/labels/JID2022057238';
+const HAWAII_LOGO_URL = './images/logo hawai.png';
 
 const menuItems = [
   { name: 'Dashboard', icon: <LayoutDashboard />, path: '/dashboard' },
