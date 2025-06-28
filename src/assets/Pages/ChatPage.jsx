@@ -544,12 +544,12 @@ const ChatPage = () => {
             <h3 className="font-bold text-white mb-4">QUICK LINKS</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link to="#" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   FAQ
                 </Link>
               </li>
               <li>
-                <Link to="#" className="hover:text-white transition-colors">
+                <Link to="/form-pengaduan" className="hover:text-white transition-colors">
                   Pengaduan Pelanggan
                 </Link>
               </li>
