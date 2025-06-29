@@ -1,312 +1,187 @@
-import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, MapPin, Edit3, Lock, LogOut, Save, XCircle, ChevronLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+// src/pages/ProfilePage.jsx (Versi Final yang Bersih dan Lengkap)
 
-const ProfilePage = () => {
-  const primaryRed = '#B82329';
-  const navigate = useNavigate();
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { User, MapPin, History, Settings, LogOut, Edit, Trash2, PlusCircle, Bell, Mail, MessageSquare, X, AlertTriangle } from 'lucide-react';
 
-  const [currentMode, setCurrentMode] = useState('view');
+// --- DATA DUMMY & FUNGSI HELPER ---
+const initialUserData = {
+  name: 'Suci Sucipto',
+  email: 'suci@email.com',
+  tel: '081234564234',
+  avatarUrl: 'https://i.pravatar.cc/150?u=suci',
+  stats: { points: 1, transactions: 17, spending: 150000, level: 'Classic' },
+};
+const initialUserAddresses = [
+  { id: 1, label: "Rumah", recipient: "Suci Sucipto", phone: "081234564234", fullAddress: "Gg. Intisari, Umbansari - Rumbai, Pekanbaru, 28265", isPrimary: true },
+  { id: 2, label: "Kantor", recipient: "Suci (Work)", phone: "081234567890", fullAddress: "Jl. Jend. Sudirman No. 123, Pusat Kota, Pekanbaru, 28111", isPrimary: false },
+];
+const formatCurrency = (amount) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(Number(amount) || 0);
 
-  const [userData, setUserData] = useState({
-    name: 'Budi Santoso',
-    email: 'budi.santoso@example.com',
-    phone: '081234567890',
-    address: 'Jl. Contoh Alamat No. 123, Pekanbaru',
-    role: 'customer',
-    membership: 'Gold',
-    joinDate: '2023-01-15',
-    lastLogin: '2024-06-27 14:30',
-  });
+// ====================================================================
+// === DEFINISI SEMUA KOMPONEN KECIL (SUB-KOMPONEN) DI SINI DULU ===
+// ====================================================================
 
-  const [editFormData, setEditFormData] = useState({ ...userData });
-  const [passwordFormData, setPasswordFormData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmNewPassword: '',
-  });
-
-  useEffect(() => {
-    setEditFormData({ ...userData });
-  }, [userData, currentMode]);
-
-  const handleEditFormChange = (e) => {
-    const { name, value } = e.target;
-    setEditFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleEditFormSubmit = (e) => {
-    e.preventDefault();
-    console.log('Menyimpan perubahan profil:', editFormData);
-    // === LOGIKA SIMPAN PERUBAHAN KE API DI SINI ===
-    setUserData(editFormData);
-    alert('Profil berhasil diperbarui!');
-    setCurrentMode('view');
-  };
-
-  const handlePasswordFormChange = (e) => {
-    const { name, value } = e.target;
-    setPasswordFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handlePasswordFormSubmit = (e) => {
-    e.preventDefault();
-    const { currentPassword, newPassword, confirmNewPassword } = passwordFormData;
-
-    if (newPassword !== confirmNewPassword) {
-      alert('Password baru dan konfirmasi password tidak cocok!');
-      return;
-    }
-    if (newPassword.length < 6) {
-      alert('Password baru minimal 6 karakter!');
-      return;
-    }
-    // === LOGIKA UBAH PASSWORD KE API DI SINI ===
-    console.log('Mengubah password:', { currentPassword, newPassword });
-    alert('Password berhasil diubah!');
-    setPasswordFormData({
-      currentPassword: '',
-      newPassword: '',
-      confirmNewPassword: '',
-    });
-    setCurrentMode('view');
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    console.log('User logged out');
-    alert('Anda telah keluar.');
-    navigate('/signin');
-  };
-
-  const renderContent = () => {
-    switch (currentMode) {
-      case 'edit':
-        return (
-          <form onSubmit={handleEditFormSubmit} className="space-y-6">
-            <h3 className="text-xl font-bold mb-4" style={{ color: primaryRed }}>Edit Profil</h3>
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nama Lengkap</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={editFormData.name}
-                onChange={handleEditFormChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#B82329] focus:border-[#B82329] sm:text-sm"
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={editFormData.email}
-                onChange={handleEditFormChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#B82329] focus:border-[#B82329] sm:text-sm"
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Nomor Telepon</label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                value={editFormData.phone}
-                onChange={handleEditFormChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#B82329] focus:border-[#B82329] sm:text-sm"
-              />
-            </div>
-            <div>
-              <label htmlFor="address" className="block text-sm font-medium text-gray-700">Alamat</label>
-              <textarea
-                id="address"
-                name="address"
-                value={editFormData.address}
-                onChange={handleEditFormChange}
-                rows="3"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#B82329] focus:border-[#B82329] sm:text-sm"
-              ></textarea>
-            </div>
-            <div className="flex justify-end gap-4 mt-6">
-              <button
-                type="button"
-                onClick={() => setCurrentMode('view')}
-                className="flex items-center gap-2 px-5 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm shadow hover:bg-gray-200 transition-colors"
-              >
-                <XCircle size={16} /> Batal
-              </button>
-              <button
-                type="submit"
-                className="flex items-center gap-2 px-5 py-2 rounded-lg text-sm shadow hover:brightness-90 transition-colors"
-                style={{ backgroundColor: primaryRed, color: 'white' }}
-              >
-                <Save size={16} /> Simpan Perubahan
-              </button>
-            </div>
-          </form>
-        );
-      case 'changePassword':
-        return (
-          <form onSubmit={handlePasswordFormSubmit} className="space-y-6">
-            <h3 className="text-xl font-bold mb-4" style={{ color: primaryRed }}>Ubah Password</h3>
-            <div>
-              <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700">Password Saat Ini</label>
-              <input
-                type="password"
-                id="currentPassword"
-                name="currentPassword"
-                value={passwordFormData.currentPassword}
-                onChange={handlePasswordFormChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#B82329] focus:border-[#B82329] sm:text-sm"
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">Password Baru</label>
-              <input
-                type="password"
-                id="newPassword"
-                name="newPassword"
-                value={passwordFormData.newPassword}
-                onChange={handlePasswordFormChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#B82329] focus:border-[#B82329] sm:text-sm"
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="confirmNewPassword" className="block text-sm font-medium text-gray-700">Konfirmasi Password Baru</label>
-              <input
-                type="password"
-                id="confirmNewPassword"
-                name="confirmNewPassword"
-                value={passwordFormData.confirmNewPassword}
-                onChange={handlePasswordFormChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#B82329] focus:border-[#B82329] sm:text-sm"
-                required
-              />
-            </div>
-            <div className="flex justify-end gap-4 mt-6">
-              <button
-                type="button"
-                onClick={() => setCurrentMode('view')}
-                className="flex items-center gap-2 px-5 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm shadow hover:bg-gray-200 transition-colors"
-              >
-                <XCircle size={16} /> Batal
-              </button>
-              <button
-                type="submit"
-                className="flex items-center gap-2 px-5 py-2 rounded-lg text-sm shadow hover:brightness-90 transition-colors"
-                style={{ backgroundColor: primaryRed, color: 'white' }}
-              >
-                <Save size={16} /> Ubah Password
-              </button>
-            </div>
-          </form>
-        );
-      default: // 'view' mode
-        return (
-          <>
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-              {/* Avatar / Foto Profil */}
-              <div className="flex-shrink-0">
-                <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden border-4 border-gray-300">
-                  <User size={64} className="text-gray-500" />
-                </div>
-              </div>
-
-              {/* Detail Informasi Pengguna */}
-              {/* PERUBAHAN: Hapus text-center dari div ini dan sesuaikan margin */}
-              <div className="flex-grow text-center md:text-left pt-4 md:pt-0"> {/* Added pt-4 for small screens */}
-                <h3 className="text-2xl font-bold mb-1" style={{ color: primaryRed }}>{userData.name}</h3> {/* Adjusted mb */}
-                <p className="text-gray-600 mb-4 capitalize">Role: {userData.role}</p>
-
-                {/* PERUBAHAN: Adjust space-y dan tambahkan padding horizontal */}
-                <div className="space-y-3 text-gray-700 px-2 md:px-0"> {/* Added px for consistency on smaller screens */}
-                  <div className="flex items-center gap-3"> {/* Increased gap for icons */}
-                    <Mail size={20} className="text-gray-500 flex-shrink-0" /> {/* Added flex-shrink-0 */}
-                    <span>{userData.email}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Phone size={20} className="text-gray-500 flex-shrink-0" />
-                    <span>{userData.phone}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <MapPin size={20} className="text-gray-500 flex-shrink-0" />
-                    <span>{userData.address}</span>
-                  </div>
-                  {userData.role === 'customer' && (
-                    <div className="flex items-center gap-3 pt-2"> {/* Added pt for spacing below address */}
-                      <span className="p-1 px-3 rounded-full text-xs font-bold text-white shadow-sm" style={{ backgroundColor: primaryRed }}> {/* Adjusted padding and added shadow */}
-                        {userData.membership}
-                      </span>
-                      <span className="text-gray-500">Membership</span>
+// Komponen Modal untuk Form Alamat
+const AddressFormModal = ({ isOpen, onClose, onSave, address }) => {
+    const [formData, setFormData] = useState({});
+    useEffect(() => { setFormData(address ? { ...address } : { id: null, label: '', recipient: '', phone: '', fullAddress: '', isPrimary: false }); }, [address, isOpen]);
+    const handleChange = (e) => { const { name, value, type, checked } = e.target; setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value })); };
+    const handleSubmit = (e) => { e.preventDefault(); onSave(formData); };
+    if (!isOpen) return null;
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg animate-fade-in-up">
+                <form onSubmit={handleSubmit}>
+                    <div className="flex justify-between items-center p-5 border-b"><h3 className="text-xl font-bold text-gray-900">{address ? 'Edit Alamat' : 'Tambah Alamat Baru'}</h3><button type="button" onClick={onClose} className="p-2 rounded-full hover:bg-gray-100"><X size={20}/></button></div>
+                    <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+                        <div><label className="block text-sm font-medium text-gray-700">Label Alamat</label><input type="text" name="label" value={formData.label || ''} onChange={handleChange} placeholder="Contoh: Rumah, Kantor" className="mt-1 w-full p-2 border rounded-md" required/></div>
+                        <div><label className="block text-sm font-medium text-gray-700">Nama Penerima</label><input type="text" name="recipient" value={formData.recipient || ''} onChange={handleChange} className="mt-1 w-full p-2 border rounded-md" required/></div>
+                        <div><label className="block text-sm font-medium text-gray-700">Nomor Telepon</label><input type="tel" name="phone" value={formData.phone || ''} onChange={handleChange} className="mt-1 w-full p-2 border rounded-md" required/></div>
+                        <div><label className="block text-sm font-medium text-gray-700">Alamat Lengkap</label><textarea name="fullAddress" value={formData.fullAddress || ''} onChange={handleChange} rows="3" className="mt-1 w-full p-2 border rounded-md" required/></div>
+                        <div className="flex items-center"><input type="checkbox" name="isPrimary" id="isPrimary" checked={formData.isPrimary || false} onChange={handleChange} className="h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500"/><label htmlFor="isPrimary" className="ml-2 block text-sm text-gray-900">Jadikan alamat utama</label></div>
                     </div>
-                  )}
-                  {/* PERUBAHAN: Adjust top margin for joinDate */}
-                  <div className="text-xs text-gray-500 pt-4">
-                    Bergabung sejak: {userData.joinDate}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    Terakhir login: {userData.lastLogin}
-                  </div>
-                </div>
-              </div>
+                    <div className="p-5 border-t bg-gray-50 flex justify-end"><button type="submit" className="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700">Simpan</button></div>
+                </form>
             </div>
+        </div>
+    );
+};
 
-            {/* Action Buttons for View Mode */}
-            {/* PERUBAHAN: Gunakan justify-center untuk tombol di layar kecil juga */}
-            <div className="mt-8 pt-6 border-t border-gray-200 flex flex-col sm:flex-row justify-center gap-4"> {/* Changed justify-end to justify-center */}
-              <button
-                onClick={() => setCurrentMode('edit')}
-                className="flex items-center justify-center gap-2 px-5 py-2 rounded-lg text-sm shadow hover:brightness-90 transition-colors w-full sm:w-auto" // Added w-full sm:w-auto
-                style={{ backgroundColor: primaryRed, color: 'white' }}
-              >
-                <Edit3 size={16} /> Edit Profil
-              </button>
-              <button
-                onClick={() => setCurrentMode('changePassword')}
-                className="flex items-center justify-center gap-2 px-5 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm shadow hover:bg-gray-200 transition-colors w-full sm:w-auto" // Added w-full sm:w-auto
-              >
-                <Lock size={16} /> Ubah Password
-              </button>
-              <button
-                onClick={handleLogout}
-                className="flex items-center justify-center gap-2 px-5 py-2 bg-red-500 text-white rounded-lg text-sm shadow hover:bg-red-600 transition-colors w-full sm:w-auto" // Added w-full sm:w-auto
-              >
-                <LogOut size={16} /> Logout
-              </button>
+// Komponen Modal untuk Konfirmasi Hapus
+const ConfirmDeleteModal = ({ isOpen, onClose, onConfirm, addressLabel }) => {
+    if (!isOpen) return null;
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4">
+            <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center animate-fade-in-up">
+                <AlertTriangle className="mx-auto text-red-500 mb-4" size={48} />
+                <h3 className="text-xl font-bold text-gray-900">Hapus Alamat?</h3>
+                <p className="text-gray-600 text-sm mt-2 mb-6">Apakah Anda yakin ingin menghapus alamat <span className="font-bold">{addressLabel}</span>? Aksi ini tidak dapat dibatalkan.</p>
+                <div className="flex gap-4 justify-center">
+                    <button onClick={onClose} className="px-8 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">Batal</button>
+                    <button onClick={onConfirm} className="px-8 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700">Ya, Hapus</button>
+                </div>
             </div>
-          </>
-        );
+        </div>
+    );
+};
+
+// Komponen Toggle Switch
+const ToggleSwitch = ({ label, description, icon: Icon, enabled, setEnabled }) => (
+    <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+        <div className="flex items-center gap-4"><Icon className="text-gray-500" size={24} /><div><p className="font-semibold text-gray-800">{label}</p><p className="text-sm text-gray-500">{description}</p></div></div>
+        <button onClick={() => setEnabled(!enabled)} className={`relative inline-flex items-center h-6 rounded-full w-11 transition-colors ${enabled ? 'bg-red-600' : 'bg-gray-200'}`}><span className={`inline-block w-4 h-4 transform bg-white rounded-full transition-transform ${enabled ? 'translate-x-6' : 'translate-x-1'}`}/></button>
+    </div>
+);
+
+// Komponen Sidebar Navigasi
+const ProfileSidebar = ({ activeSection, setActiveSection }) => {
+    const navItems = [
+        { id: 'profil', label: 'Edit Profil', icon: User }, { id: 'alamat', label: 'Alamat Saya', icon: MapPin },
+        { id: 'riwayat', label: 'Riwayat Pesanan', icon: History }, { id: 'pengaturan', label: 'Pengaturan Akun', icon: Settings },
+        { id: 'logout', label: 'Keluar', icon: LogOut, isDanger: true },
+    ];
+    return (
+        <div className="bg-white p-6 rounded-xl shadow-lg h-full">
+            <div className="flex flex-col items-center text-center mb-8"><div className="relative mb-4"><img src={initialUserData.avatarUrl} alt="User Avatar" className="w-28 h-28 rounded-full border-4 border-white shadow-lg"/><button className="absolute -bottom-1 -right-1 bg-red-600 text-white p-2 rounded-full border-2 border-white hover:bg-red-700 transition-transform hover:scale-110"><Edit size={16} /></button></div><h2 className="text-2xl font-bold text-gray-800">{initialUserData.name}</h2><p className="text-sm text-gray-500">{initialUserData.email}</p></div>
+            <nav className="space-y-2">{navItems.map((item) => (<Link key={item.id} to={item.id === 'riwayat' ? '/riwayat-pesanan' : '#'} onClick={(e) => { if (item.id !== 'riwayat') { e.preventDefault(); setActiveSection(item.id); } }} className={`flex items-center gap-4 px-4 py-3 rounded-lg text-base font-semibold transition-colors ${activeSection === item.id ? 'bg-red-50 text-red-700' : item.isDanger ? 'text-red-600 hover:bg-red-50' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}><item.icon size={20} /><span>{item.label}</span></Link>))}
+            </nav>
+        </div>
+    );
+};
+
+// Komponen Konten di Sebelah Kanan
+const ProfileContent = ({ activeSection, addresses, onOpenAddressModal, onSetAddressToDelete, onSetPrimary }) => {
+    const { logout } = useAuth();
+    const navigate = useNavigate();
+    const [settings, setSettings] = useState({ promoEmail: true, orderStatus: true, news: false });
+    const handleLogout = () => { logout(); navigate('/signin'); };
+
+    switch (activeSection) {
+      case 'alamat': return (<div className="bg-white p-8 rounded-xl shadow-lg animate-fade-in"><div className="flex flex-wrap justify-between items-center border-b pb-4 mb-6 gap-4"><h2 className="text-2xl font-bold text-gray-800">Alamat Saya</h2><button onClick={() => onOpenAddressModal()} className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors"><PlusCircle size={18}/> Tambah Alamat Baru</button></div><div className="space-y-5">{addresses.map(addr => (<div key={addr.id} className={`p-5 border-2 rounded-lg transition-all ${addr.isPrimary ? 'border-red-500 bg-red-50' : 'border-gray-200'}`}><div className="flex justify-between items-start"><div className="flex items-center gap-3"><h4 className="font-bold text-lg text-gray-800">{addr.label}</h4>{addr.isPrimary && <span className="text-xs font-semibold bg-green-100 text-green-800 px-2.5 py-1 rounded-full">Utama</span>}</div><div className="flex gap-2"><button onClick={() => onOpenAddressModal(addr)} title="Edit" className="p-2 text-gray-500 hover:text-blue-600"><Edit size={16} /></button><button onClick={() => onSetAddressToDelete(addr)} title="Hapus" className="p-2 text-gray-500 hover:text-red-600"><Trash2 size={16} /></button></div></div><div className="mt-4 text-sm"><p className="font-semibold text-gray-700">{addr.recipient} ({addr.phone})</p><p className="text-gray-600 mt-1">{addr.fullAddress}</p></div>{!addr.isPrimary && (<div className="mt-4 border-t pt-3"><button onClick={() => onSetPrimary(addr.id)} className="text-sm font-semibold text-red-600 hover:underline">Jadikan Alamat Utama</button></div>)}</div>))}</div></div>);
+      case 'pengaturan': return (<div className="bg-white p-8 rounded-xl shadow-lg animate-fade-in"><h2 className="text-2xl font-bold text-gray-800 border-b pb-4 mb-6">Pengaturan Akun & Notifikasi</h2><div className="space-y-4"><ToggleSwitch label="Notifikasi Promo" description="Terima info promo & diskon terbaru via Email" icon={Mail} enabled={settings.promoEmail} setEnabled={(val) => setSettings({...settings, promoEmail: val})} /><ToggleSwitch label="Notifikasi Status Pesanan" description="Dapatkan update saat status pesananmu berubah" icon={MessageSquare} enabled={settings.orderStatus} setEnabled={(val) => setSettings({...settings, orderStatus: val})} /><ToggleSwitch label="Newsletter Mingguan" description="Berlangganan berita & artikel menarik dari kami" icon={Bell} enabled={settings.news} setEnabled={(val) => setSettings({...settings, news: val})} /></div><div className="mt-8 text-right"><button className="px-8 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors shadow-md hover:shadow-lg">Simpan Pengaturan</button></div></div>);
+      case 'logout': return (<div className="bg-white p-8 rounded-xl shadow-lg text-center h-full flex flex-col justify-center items-center animate-fade-in"><LogOut className="text-red-500 mb-4" size={48} /><h2 className="text-3xl font-bold text-gray-800">Keluar dari Akun</h2><p className="mt-2 text-gray-600 max-w-sm">Apakah Anda yakin ingin mengakhiri sesi Anda?</p><div className="mt-8 flex gap-4"><button onClick={() => alert("Batal Logout")} className="px-8 py-3 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">Batal</button><button onClick={handleLogout} className="px-8 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700">Ya, Keluar</button></div></div>);
+      default: return (<div className="space-y-8 animate-fade-in"><div className="bg-gradient-to-br from-red-600 to-red-800 text-white p-6 rounded-xl shadow-lg"><div className="flex justify-between items-start mb-4"><div><p className="text-sm opacity-80 tracking-wider">Level Member</p><p className="text-3xl font-bold">{initialUserData.stats.level}</p></div></div><div className="grid grid-cols-3 gap-4 text-center mt-6"><div><p className="text-sm opacity-80">Poin Reward</p><p className="text-xl font-semibold">{initialUserData.stats.points}</p></div><div><p className="text-sm opacity-80">Jml. Transaksi</p><p className="text-xl font-semibold">{initialUserData.stats.transactions}</p></div><div><p className="text-sm opacity-80">Total Pengeluaran</p><p className="text-xl font-semibold">{formatCurrency(initialUserData.stats.spending)}</p></div></div></div><form className="bg-white p-8 rounded-xl shadow-lg"><h3 className="text-2xl font-bold text-gray-800 border-b pb-4 mb-6">User Settings</h3><div className="grid grid-cols-1 md:grid-cols-2 gap-6"><div><label className="block text-sm font-medium text-gray-700 mb-1">Nama Depan</label><input type="text" defaultValue="Suci" className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"/></div><div><label className="block text-sm font-medium text-gray-700 mb-1">Nama Belakang</label><input type="text" defaultValue="Sucipto" className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"/></div><div><label className="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="email" defaultValue={initialUserData.email} className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed" readOnly/></div><div><label className="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon</label><input type="tel" defaultValue={initialUserData.tel} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"/></div></div><div className="mt-8 text-right"><button type="submit" className="px-8 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors shadow-md hover:shadow-lg">Simpan Perubahan</button></div></form></div>);
     }
+}
+
+
+// ===============================================================
+// === KOMPONEN UTAMA HALAMAN PROFIL (YANG DI-EXPORT) ===
+// ===============================================================
+const ProfilePage = () => {
+  const [activeSection, setActiveSection] = useState('profil');
+  
+  // State dan fungsi untuk CRUD Alamat dipusatkan di sini
+  const [addresses, setAddresses] = useState(initialUserAddresses);
+  const [isAddressModalOpen, setAddressModalOpen] = useState(false);
+  const [editingAddress, setEditingAddress] = useState(null);
+  const [addressToDelete, setAddressToDelete] = useState(null);
+
+  const handleOpenAddressModal = (address = null) => {
+    setEditingAddress(address);
+    setAddressModalOpen(true);
+  };
+
+  const handleSaveAddress = (formData) => {
+    let newAddresses = [...addresses];
+    if (formData.isPrimary) {
+      newAddresses = newAddresses.map(addr => ({ ...addr, isPrimary: false }));
+    }
+    if (editingAddress) {
+      newAddresses = newAddresses.map(addr => addr.id === editingAddress.id ? { ...formData } : addr);
+    } else {
+      newAddresses.push({ ...formData, id: Date.now() });
+    }
+    setAddresses(newAddresses);
+    setAddressModalOpen(false);
+  };
+  
+  const handleConfirmDelete = () => {
+    setAddresses(addresses.filter(addr => addr.id !== addressToDelete.id));
+    setAddressToDelete(null);
+  };
+  
+  const handleSetPrimary = (addressId) => {
+    setAddresses(addresses.map(addr => ({ ...addr, isPrimary: addr.id === addressId })));
   };
 
   return (
-    <main className="p-6 md:p-10 bg-gray-50 min-h-screen">
-      <div className="flex justify-between items-center px-6 py-4 mb-8 bg-white text-gray-800 rounded-xl shadow-lg border-b-4" style={{ borderColor: primaryRed }}>
-        <h2 className="text-3xl font-extrabold tracking-wide" style={{ color: primaryRed }}>
-          {currentMode === 'view' ? 'Profil Pengguna' :
-           currentMode === 'edit' ? 'Edit Profil' :
-           'Ubah Password'}
-        </h2>
-        {currentMode !== 'view' && (
-            <button
-                onClick={() => setCurrentMode('view')}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm shadow hover:bg-gray-200 transition-colors"
-            >
-                <ChevronLeft size={16} /> Kembali
-            </button>
-        )}
+    <>
+      {/* Semua Modal dirender di level atas agar bisa menutupi seluruh layar */}
+      <AddressFormModal 
+          isOpen={isAddressModalOpen} 
+          onClose={() => setAddressModalOpen(false)}
+          onSave={handleSaveAddress}
+          address={editingAddress}
+      />
+      <ConfirmDeleteModal 
+          isOpen={!!addressToDelete}
+          onClose={() => setAddressToDelete(null)}
+          onConfirm={handleConfirmDelete}
+          addressLabel={addressToDelete?.label}
+      />
+      
+      <div className="bg-gray-50 min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="lg:col-span-1">
+              <ProfileSidebar activeSection={activeSection} setActiveSection={setActiveSection} />
+            </div>
+            <div className="lg:col-span-3">
+              <ProfileContent 
+                activeSection={activeSection}
+                addresses={addresses}
+                onOpenAddressModal={handleOpenAddressModal}
+                onSetAddressToDelete={setAddressToDelete}
+                onSetPrimary={handleSetPrimary}
+              />
+            </div>
+          </div>
+        </div>
       </div>
-
-      <div className="bg-white p-8 rounded-xl shadow-md max-w-3xl mx-auto border-t-4" style={{ borderColor: primaryRed }}>
-        {renderContent()}
-      </div>
-    </main>
+    </>
   );
 };
 
