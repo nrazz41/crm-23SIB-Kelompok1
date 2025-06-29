@@ -21,6 +21,7 @@ export default function FormPengaduanPage() {
       lokasiHawaii,
       deskripsiPengaduan,
     });
+    // Reset form
     setNamaLengkap('');
     setNoHp('');
     setEmail('');
@@ -31,9 +32,9 @@ export default function FormPengaduanPage() {
   };
 
   return (
-    <div className="w-250 h-215 bg-gray-100 text-gray-800">
-      <div className="bg-white w-full h-full px-10 py-10">
-        <h1 className="text-4xl font-bold text-red-700 mb-12">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 text-gray-800 px-4">
+      <div className="bg-white w-full max-w-4xl px-10 py-10 rounded-xl shadow-lg">
+        <h1 className="text-4xl font-bold text-red-700 mb-12 text-center">
           Form Pengaduan Pelanggan
         </h1>
 
@@ -118,7 +119,7 @@ export default function FormPengaduanPage() {
           <div className="mt-10 flex justify-end">
             <button
               type="submit"
-              className="bg-red-600 hover:bg-red-700 text-white font-semibold text-lg px-10 py-4 rounded-lg"
+              className="bg-red-600 hover:bg-red-700 text-white font-semibold text-lg px-10 py-4 rounded-lg transition duration-300"
             >
               Kirim Pengaduan
             </button>
@@ -128,4 +129,3 @@ export default function FormPengaduanPage() {
     </div>
   );
 }
-
