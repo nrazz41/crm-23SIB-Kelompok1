@@ -6,6 +6,7 @@ import {
   User,
   Percent,
   Bell,
+  FileText,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -196,6 +197,12 @@ const HomePage = () => {
           </div>
 
           <div className="flex items-center space-x-2">
+            <Link
+              to="/riwayat-pesanan"
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-red-600 shadow-sm hover:bg-gray-200 transition"
+            >
+              <FileText size={20} />
+            </Link>
             <Link
               to="/notification"
               className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-red-600 shadow-md hover:bg-gray-200 transition"

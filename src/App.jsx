@@ -18,6 +18,8 @@ import CategoryPage from "./assets/Pages/CategoryPage";
 import OrderDetailPage from "./assets/pages/OrderDetailPage";
 import CheckoutPage from "./assets/pages/CheckoutPage";
 import ChatPage from "./assets/Pages/ChatPage";
+import ProductDetailPage from "./assets/Pages/ProductDetailPage";
+import OrderListPage from './assets/Pages/OrderListPage';
 
 // Pages - Fitur Internal
 import Dashboard from "./assets/Pages/Dashboard";
@@ -31,14 +33,18 @@ import SalesHistoryPage from "./assets/Pages/RiwayatPenjualan";
 import DataPelanggan from "./assets/Pages/DataPelanggan";
 import ManajemenPenjualanPage from "./assets/Pages/ManajemenPenjualanPage";
 import ArticleDashboard from "./assets/Pages/ArticleDashboard";
+import ProfilePage from "./assets/Pages/ProfilePage";
 
 // Context
 import { CartProvider } from './assets/contexts/CartContext';
-import ProductDetailPage from "./assets/Pages/ProductDetailPage";
+import { OrderProvider } from './assets/contexts/OrderContext';
+import { AuthProvider } from './assets/contexts/AuthContext';
 
 function App() {
   return (
     <CartProvider>
+      <AuthProvider>
+      <OrderProvider>
       <Routes>
         {/* Halaman-halaman umum (tanpa layout utama) */}
         <Route element={<AuthLayout />}>
@@ -55,6 +61,8 @@ function App() {
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/product/:id" element={<ProductDetailPage />} />
+          <Route path="/riwayat-pesanan" element={<OrderListPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
 
         {/* Halaman internal (butuh MainLayout) */}
@@ -72,6 +80,8 @@ function App() {
           <Route path="/artikel" element={<ArticleDashboard />} />
         </Route>
       </Routes>
+    </OrderProvider>
+    </AuthProvider> 
     </CartProvider>
   );
 }
