@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,9 +10,10 @@ import {
   Tooltip,
   Legend,
   ArcElement,
-} from 'chart.js'
-import { Bar, Line, Doughnut } from 'react-chartjs-2'
-import { ShoppingCart, Users, CreditCard } from 'lucide-react'
+} from 'chart.js';
+import { Bar, Line, Pie, Doughnut } from 'react-chartjs-2';
+import { Package, Users, Tag, DollarSign, AlertTriangle, UserPlus, TrendingUp } from 'lucide-react'; // Import ikon yang relevan
+import { useNavigate } from 'react-router-dom';
 
 ChartJS.register(
   CategoryScale,
@@ -24,278 +25,326 @@ ChartJS.register(
   Tooltip,
   Legend,
   ArcElement
-)
+);
+
+// --- Warna Tema (Dipindahkan ke luar komponen agar dapat diakses secara global) ---
+const primaryRed = '#B82329';
+const lightRed = '#FFEEEE';
+const darkerRed = '#8e1b20';
+const accentBlue = '#4A90E2';
+const accentGreen = '#50E3C2';
+const accentYellow = '#F8E71C';
+const goldColor = '#DAA520';
+const silverColor = '#C0C0C0';
+const bronzeColor = '#CD7F32';
+
+// --- Fungsi untuk format Rupiah (Juga dipindahkan ke luar komponen) ---
+const formatRupiah = (amount) => {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
 
 const Dashboard = () => {
-  // Data untuk Sales Statistics (Line Chart)
-  const lineData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-    datasets: [
-      {
-        label: "Sales",
-        data: [300, 350, 420, 380, 450, 500, 480, 520, 580, 550, 600, 650],
-        borderColor: "#ef4444",
-        backgroundColor: "rgba(239, 68, 68, 0.1)",
-        fill: true,
-        tension: 0.4,
-        pointRadius: 4,
-        pointBackgroundColor: "#ef4444",
-        pointBorderColor: "#ef4444",
-      },
-    ],
-  }
+  const navigate = useNavigate();
 
-  const lineOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      title: { display: false },
-      tooltip: {
-        backgroundColor: 'rgba(0,0,0,0.8)',
-        titleColor: 'white',
-        bodyColor: 'white',
-      }
-    },
-    scales: {
-      x: {
-        grid: {
-          display: true,
-          color: 'rgba(0,0,0,0.1)',
-          drawBorder: false
-        },
-        ticks: {
-          font: { size: 11 },
-          color: '#6b7280'
-        },
-        border: { display: false }
-      },
-      y: {
-        grid: {
-          display: true,
-          color: 'rgba(0,0,0,0.1)',
-          drawBorder: false
-        },
-        ticks: {
-          font: { size: 11 },
-          color: '#6b7280',
-          stepSize: 50
-        },
-        border: { display: false },
-        min: 250,
-        max: 650
-      }
+  // --- Data Dummy Produk (dari ProductManagement) ---
+  const products = [
+    { id: 1, name: 'Susu UHT Full Cream 1L', category: 'Dairy & Frozen', stock: 150, price: 17500, status: 'Active', imageUrl: 'https://asbajayaberkah.com/wp-content/uploads/2024/01/ULTRA-MILK-SUSU-UHT-FULL-CREAM-1L.jpg' },
+    { id: 2, name: 'Beras Premium 5kg', category: 'Staple Food', stock: 80, price: 62000, status: 'Active', imageUrl: 'https://asbajayaberkah.com/wp-content/uploads/2024/01/ULTRA-MILK-SUSU-UHT-FULL-CREAM-1L.jpg' },
+    { id: 3, name: 'Minyak Goreng 2L', category: 'Cooking Needs', stock: 15, price: 35000, status: 'Low Stock', imageUrl: 'https://asbajayaberkah.com/wp-content/uploads/2024/01/ULTRA-MILK-SUSU-UHT-FULL-CREAM-1L.jpg' },
+    { id: 4, name: 'Mie Instan Goreng', category: 'Snacks & Instant', stock: 200, price: 3000, status: 'Active', imageUrl: 'https://asbajayaberkah.com/wp-content/uploads/2024/01/ULTRA-MILK-SUSU-UHT-FULL-CREAM-1L.jpg' },
+    { id: 5, name: 'Sabun Mandi Cair', category: 'Personal Care', stock: 0, price: 25000, status: 'Out of Stock', imageUrl: 'https://asbajayaberkah.com/wp-content/uploads/2024/01/ULTRA-MILK-SUSU-UHT-FULL-CREAM-1L.jpg' },
+    { id: 6, name: 'Kopi Bubuk Murni 250gr', category: 'Beverages', stock: 75, price: 15000, status: 'Active', imageUrl: 'https://asbajayaberkah.com/wp-content/uploads/2024/01/ULTRA-MILK-SUSU-UHT-FULL-CREAM-1L.jpg' },
+    { id: 7, name: 'Gula Pasir 1kg', category: 'Staple Food', stock: 120, price: 13500, status: 'Active', imageUrl: 'https://asbajayaberkah.com/wp-content/uploads/2024/01/ULTRA-MILK-SUSU-UHT-FULL-CREAM-1L.jpg' },
+  ];
+
+  const lowStockProducts = products.filter(p => p.stock > 0 && p.stock <= 20).length;
+  const outOfStockProducts = products.filter(p => p.stock === 0).length;
+  const criticalStockProductsCount = lowStockProducts + outOfStockProducts;
+
+  // --- Data Dummy Penjualan (disesuaikan agar bisa dihitung) ---
+  const salesData = [
+    { date: '2025-06-27', amount: 1200000 }, // Hari ini
+    { date: '2025-06-27', amount: 800000 }, // Hari ini
+    { date: '2025-06-26', amount: 500000 },
+    { date: '2025-06-15', amount: 3000000 },
+    { date: '2025-05-20', amount: 4500000 },
+    { date: '2025-06-05', amount: 2500000 },
+    { date: '2025-04-10', amount: 1500000 },
+    { date: '2025-06-20', amount: 1800000 },
+    { date: '2025-06-22', amount: 900000 },
+    { date: '2025-06-01', amount: 2000000 },
+    { date: '2025-06-03', amount: 1000000 },
+    { date: '2025-06-25', amount: 700000 },
+  ];
+
+  const today = new Date();
+  const todayString = today.toISOString().split('T')[0];
+  const thisMonth = today.getMonth();
+  const thisYear = today.getFullYear();
+
+  const pendapatanHariIni = salesData
+    .filter(s => s.date === todayString)
+    .reduce((sum, s) => sum + s.amount, 0);
+
+  const totalPenjualanBulanIni = salesData
+    .filter(s => {
+      const saleDate = new Date(s.date);
+      return saleDate.getMonth() === thisMonth && saleDate.getFullYear() === thisYear;
+    })
+    .reduce((sum, s) => sum + s.amount, 0);
+
+  // --- Data Dummy Members (disesuaikan untuk membership levels) ---
+  const membersData = [
+    { id: 'M001', name: 'Budi Santoso', joinDate: '2024-06-10', membershipLevel: 'Platinum' },
+    { id: 'M002', name: 'Siti Aminah', joinDate: '2025-06-20', membershipLevel: 'Gold' }, // Join bulan ini
+    { id: 'M003', name: 'Joko Susanto', joinDate: '2025-05-15', membershipLevel: 'Silver' },
+    { id: 'M004', name: 'Mariawati Dewi', joinDate: '2025-06-27', membershipLevel: 'Bronze' }, // Join hari ini
+    { id: 'M005', name: 'Ahmad Faisal', joinDate: '2024-12-01', membershipLevel: 'Platinum' },
+    { id: 'M006', name: 'Putri Lestari', joinDate: '2025-06-05', membershipLevel: 'Gold' }, // Join bulan ini
+    { id: 'M007', name: 'Kevin Tanaka', joinDate: '2025-06-27', membershipLevel: 'Silver' }, // Join hari ini
+    { id: 'M008', name: 'Linda Wijaya', joinDate: '2025-06-18', membershipLevel: 'Bronze' }, // Join bulan ini
+  ];
+
+  const totalMembers = membersData.length;
+  const newMembersThisMonth = membersData.filter(m => {
+    const memberJoinDate = new Date(m.joinDate);
+    return memberJoinDate.getMonth() === thisMonth && memberJoinDate.getFullYear() === thisYear;
+  }).length;
+
+  // --- Data Kartu Statistik Utama ---
+  const stats = [
+    { label: "Pendapatan Hari Ini", value: formatRupiah(pendapatanHariIni), icon: <DollarSign className="w-8 h-8" />, path: '/penjualan', color: primaryRed, bgColor: lightRed },
+    { label: "Total Penjualan Bulan Ini", value: formatRupiah(totalPenjualanBulanIni), icon: <Tag className="w-8 h-8" />, path: '/penjualan', color: darkerRed, bgColor: lightRed },
+    { label: "Produk Stok Kritis", value: criticalStockProductsCount.toLocaleString('id-ID'), icon: <AlertTriangle className="w-8 h-8" />, path: '/product', color: accentYellow, bgColor: '#FFFBEB' },
+    { label: "Anggota Baru Bulan Ini", value: newMembersThisMonth.toLocaleString('id-ID'), icon: <UserPlus className="w-8 h-8" />, path: '/pelanggan', color: accentBlue, bgColor: '#EFF6FF' },
+  ];
+
+  // --- Data untuk Grafik Penjualan Bulanan (Bar Chart) ---
+  // Menggunakan data dummy penjualan yang lebih relevan untuk grafik bulanan
+  const monthlySales = Array(12).fill(0);
+  salesData.forEach(sale => {
+    const date = new Date(sale.date);
+    if (date.getFullYear() === thisYear) { // Hanya tahun ini
+      monthlySales[date.getMonth()] += sale.amount;
     }
-  }
+  });
 
-  // Data untuk Trends Categories (Doughnut Chart)
-  const doughnutData = {
-    labels: ["Clothes", "Food", "Others"],
+  const barData = {
+    labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
     datasets: [
       {
-        data: [38.6, 35.0, 26.4],
-        backgroundColor: ["#dc2626", "#fca5a5", "#fed7d7"],
-        borderWidth: 0,
-        cutout: '65%',
+        label: "Penjualan",
+        data: monthlySales.map(amount => amount / 1000000), // Tampilkan dalam Juta Rp
+        backgroundColor: primaryRed,
+        borderColor: darkerRed,
+        borderWidth: 1,
+        borderRadius: 4,
       },
     ],
-  }
+  };
 
-  const doughnutOptions = {
+  const barOptions = {
     responsive: true,
-    maintainAspectRatio: false,
     plugins: {
-      legend: { display: false },
+      legend: { position: 'top', labels: { color: '#333' } },
+      title: { display: true, text: 'Penjualan Bulanan Tahun Ini', color: darkerRed, font: { size: 18 } },
       tooltip: {
         callbacks: {
           label: function(context) {
-            return context.label + ': ' + context.parsed + '%';
+            let label = context.dataset.label || '';
+            if (label) { label += ': '; }
+            if (context.parsed.y !== null) { label += formatRupiah(context.parsed.y * 1000000); }
+            return label;
           }
         }
       }
     },
-  }
-
-  // Data untuk Bar Chart "Data pelanggan baru"
-  const barData = {
-    labels: ["", "", "", "", "", "", ""],
-    datasets: [
-      {
-        label: "Conversion Rate",
-        data: [85, 75, 60, 80, 70, 90, 75],
-        backgroundColor: "#dc2626",
-        borderRadius: 2,
-        barThickness: 25,
-      },
-    ],
-  }
-
-  const barOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      title: { display: false },
-      tooltip: { enabled: false }
-    },
     scales: {
-      x: {
-        grid: { display: false },
-        ticks: { display: false },
-        border: { display: false }
-      },
       y: {
-        grid: { display: false },
-        ticks: { display: false },
-        border: { display: false }
+        beginAtZero: true,
+        title: { display: true, text: 'Penjualan (Juta Rp)', color: '#555' },
+        ticks: {
+          color: '#666',
+          callback: function(value) {
+            return value + ' Jt';
+          }
+        },
+        grid: { color: '#e0e0e0' }
+      },
+      x: {
+        title: { display: true, text: 'Bulan', color: '#555' },
+        ticks: { color: '#666' },
+        grid: { color: '#e0e0e0' }
       }
     }
-  }
+  };
 
-  const topSearches = [
-    { rank: 1, name: "Beras Tupi Koki", price: "Rp 120.000/sak", color: "bg-yellow-400" },
-    { rank: 2, name: "Saus ABC", price: "Rp 15.000/pcs", color: "bg-orange-400" },
-  ]
+  // --- Data untuk Grafik Pertumbuhan Anggota (Line Chart) ---
+  const monthlyMembers = Array(12).fill(0);
+  membersData.forEach(member => {
+    const joinDate = new Date(member.joinDate);
+    if (joinDate.getFullYear() === thisYear) { // Hanya tahun ini
+        for (let i = joinDate.getMonth(); i < 12; i++) {
+            monthlyMembers[i]++; // Anggota terhitung di bulan bergabung dan bulan-bulan berikutnya
+        }
+    }
+  });
+
+  const lineData = {
+    labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
+    datasets: [
+      {
+        label: "Jumlah Anggota",
+        data: monthlyMembers,
+        borderColor: accentBlue,
+        backgroundColor: '#EBF8FF',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 5,
+        pointBackgroundColor: accentBlue,
+        pointBorderColor: 'white',
+        pointBorderWidth: 2,
+        pointHoverRadius: 7,
+      },
+    ],
+  };
+
+  const lineOptions = {
+    responsive: true,
+    plugins: {
+      legend: { position: 'top', labels: { color: '#333' } },
+      title: { display: true, text: 'Pertumbuhan Anggota Tahun Ini', color: darkerRed, font: { size: 18 } },
+    },
+    scales: {
+      y: { beginAtZero: true, title: { display: true, text: 'Jumlah Anggota', color: '#555' }, ticks: { color: '#666' }, grid: { color: '#e0e0e0' } },
+      x: { title: { display: true, text: 'Bulan', color: '#555' }, ticks: { color: '#666' }, grid: { color: '#e0e0e0' } }
+    }
+  };
+
+  // --- Data untuk Grafik Distribusi Produk Berdasarkan Kategori (Pie Chart) ---
+  const productsByCategory = products.reduce((acc, product) => {
+    acc[product.category] = (acc[product.category] || 0) + 1;
+    return acc;
+  }, {});
+
+  const productCategoryLabels = Object.keys(productsByCategory);
+  const productCategoryDataValues = Object.values(productsByCategory);
+  const pieChartColors = [primaryRed, darkerRed, '#CD5C5C', '#FF6384', '#36A2EB', '#FFCE56', '#8e1b20', '#C0C0C0'];
+
+  const pieData = {
+    labels: productCategoryLabels,
+    datasets: [
+      {
+        data: productCategoryDataValues,
+        backgroundColor: productCategoryLabels.map((_, index) => pieChartColors[index % pieChartColors.length]),
+        borderColor: 'white',
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  const pieOptions = {
+    responsive: true,
+    plugins: {
+      legend: { position: 'right', labels: { color: '#333' } },
+      title: { display: true, text: 'Distribusi Produk per Kategori', color: darkerRed, font: { size: 18 } },
+    },
+  };
+
+  // --- Data untuk Grafik Distribusi Level Membership (Doughnut Chart) ---
+  const membersByMembershipLevel = membersData.reduce((acc, member) => {
+    acc[member.membershipLevel] = (acc[member.membershipLevel] || 0) + 1;
+    return acc;
+  }, {});
+
+  const membershipLevelLabels = Object.keys(membersByMembershipLevel);
+  const membershipLevelDataValues = Object.values(membersByMembershipLevel);
+  const doughnutChartColors = [primaryRed, goldColor, silverColor, bronzeColor, '#A52A2A', '#E9967A']; // Warna sesuai level membership
+
+  const doughnutData = {
+    labels: membershipLevelLabels,
+    datasets: [
+      {
+        data: membershipLevelDataValues,
+        backgroundColor: membershipLevelLabels.map((_, index) => doughnutChartColors[index % doughnutChartColors.length]),
+        borderColor: 'white',
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  const doughnutOptions = {
+    responsive: true,
+    plugins: {
+      legend: { position: 'right', labels: { color: '#333' } },
+      title: { display: true, text: 'Distribusi Level Membership Anggota', color: darkerRed, font: { size: 18 } },
+    },
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      {/* Main Content - Full width and no header/sidebar */}
-      <div>
-        {/* Welcome Section */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          {/* Hawaii Logo and Welcome - Logo part removed */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-4">
-              <div>
-                {/* Logo code was here */}
-                <h2 className="text-2xl font-semibold text-gray-800">Welcome, Hawai Supermarket</h2>
-              </div>
+    <div className="p-6 space-y-8 min-h-screen bg-gray-50">
+      <h1 className="text-4xl font-extrabold mb-8 text-center md:text-left" style={{ color: primaryRed, textShadow: '1px 1px 3px rgba(0,0,0,0.1)' }}>Ringkasan Dashboard</h1>
+      
+      {/* Kartu Statistik Utama */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map(({ label, value, icon, path, color, bgColor }) => (
+          <div
+            key={label}
+            className="rounded-xl shadow-lg p-5 flex flex-col items-center text-center transition-transform duration-300 hover:scale-105 hover:shadow-2xl border-b-4 cursor-pointer"
+            style={{ backgroundColor: 'white', borderColor: color }}
+            onClick={() => path && navigate(path)}
+          >
+            <div className="p-3 rounded-full mb-3" style={{ backgroundColor: bgColor, color: color }}>
+              {icon}
             </div>
-            <div className="flex space-x-4 text-sm text-gray-500">
-              <span>24h</span>
-              <span>97d</span>
-              <span>30d</span>
-            </div>
+            <p className="text-sm font-semibold text-gray-600 mb-1">{label}</p>
+            <h2 className="text-3xl font-bold text-gray-900 mt-1" style={{ color: color }}>
+              {value}
+            </h2>
           </div>
+        ))}
+      </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-green-600 text-xl">$</span>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-green-600">$500,000</div>
-                <div className="text-sm text-gray-500">TOTAL PROFIT</div>
-              </div>
-            </div>
+      {/* Bagian Grafik Utama */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Grafik Penjualan Bulanan */}
+        <div className="rounded-xl shadow-lg p-6 bg-white border-b-4" style={{ borderColor: primaryRed }}>
+          <h3 className="text-2xl font-semibold text-gray-800 mb-4" style={{ color: darkerRed }}>Penjualan Bulanan</h3>
+          <Bar options={barOptions} data={barData} />
+        </div>
 
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                <ShoppingCart className="w-6 h-6 text-orange-600" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-orange-600">893</div>
-                <div className="text-sm text-gray-500">TOTAL SALES</div>
-              </div>
-            </div>
+        {/* Grafik Pertumbuhan Anggota */}
+        <div className="rounded-xl shadow-lg p-6 bg-white border-b-4" style={{ borderColor: accentBlue }}>
+          <h3 className="text-2xl font-semibold text-gray-800 mb-4" style={{ color: darkerRed }}>Pertumbuhan Anggota</h3>
+          <Line options={lineOptions} data={lineData} />
+        </div>
+      </div>
 
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <Users className="w-6 h-6 text-blue-600" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-blue-600">1250</div>
-                <div className="text-sm text-gray-500">TOTAL VISITORS</div>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                <CreditCard className="w-6 h-6 text-red-600" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-red-600">$150,00</div>
-                <div className="text-sm text-gray-500">AVERAGE TICKET</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Charts Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Sales Statistics */}
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-gray-800">SALES STATISTICS</h3>
-                <button className="text-blue-500 text-sm">See all...</button>
-              </div>
-
-              <div className="h-48 mb-4">
-                <Line options={lineOptions} data={lineData} />
-              </div>
-
-              <div className="text-3xl font-bold text-gray-800">893</div>
-            </div>
-
-            {/* Trends Categories */}
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-gray-800">TRENDS CATEGORIES</h3>
-                <button className="text-blue-500 text-sm">See all...</button>
-              </div>
-
-              <div className="h-48 flex items-center justify-center relative">
-                <div className="w-40 h-40">
-                  <Doughnut options={doughnutOptions} data={doughnutData} />
-                </div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-sm font-medium text-gray-700">Clothes 38.6</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+      {/* Visualisasi Tambahan */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Grafik Distribusi Produk per Kategori (Pie Chart) */}
+        <div className="rounded-xl shadow-lg p-6 flex flex-col items-center bg-white border-b-4" style={{ borderColor: darkerRed }}>
+          <h3 className="text-2xl font-semibold text-gray-800 mb-4 text-center" style={{ color: darkerRed }}>Distribusi Produk per Kategori</h3>
+          <div className="w-full max-w-md h-auto">
+            <Pie options={pieOptions} data={pieData} />
           </div>
         </div>
 
-        {/* Bottom Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Data Pelanggan Baru */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="border-2 border-blue-300 border-dashed rounded-lg p-6">
-              <h3 className="font-semibold text-gray-800 mb-2">Data pelanggan baru</h3>
-              <p className="text-sm text-gray-500 mb-6">Conversion Rate (%)</p>
-
-              <div className="h-32 mb-4">
-                <Bar options={barOptions} data={barData} />
-              </div>
-            </div>
-          </div>
-
-          {/* Top Searches */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="font-semibold text-gray-800">TOP SEARCHES</h3>
-              <button className="text-blue-500 text-sm">See all...</button>
-            </div>
-
-            <div className="space-y-4">
-              {topSearches.map((item) => (
-                <div key={item.rank} className="flex items-center space-x-4">
-                  <span className="text-gray-400 w-4 text-sm">{item.rank}</span>
-                  <div className={`w-10 h-10 ${item.color} rounded`}></div>
-                  <div className="flex-1">
-                    <div className="font-medium text-sm">{item.name}</div>
-                    <div className="text-xs text-gray-500">{item.price}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
+        {/* Grafik Distribusi Level Membership (Doughnut Chart) */}
+        <div className="rounded-xl shadow-lg p-6 flex flex-col items-center bg-white border-b-4" style={{ borderColor: goldColor }}>
+          <h3 className="text-2xl font-semibold text-gray-800 mb-4 text-center" style={{ color: darkerRed }}>Distribusi Level Membership Anggota</h3>
+          <div className="w-full max-w-md h-auto">
+            <Doughnut options={doughnutOptions} data={doughnutData} />
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;
