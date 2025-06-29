@@ -39,6 +39,7 @@ import ProfilePage from "./assets/Pages/ProfilePage";
 import { CartProvider } from './assets/contexts/CartContext';
 import { OrderProvider } from './assets/contexts/OrderContext';
 import { AuthProvider } from './assets/contexts/AuthContext';
+import SalesReportsPage from "./assets/Pages/SalesReportsPage";
 
 function App() {
   return (
