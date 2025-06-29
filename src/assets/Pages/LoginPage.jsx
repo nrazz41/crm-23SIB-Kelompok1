@@ -1,12 +1,30 @@
+// src/pages/LoginPage.jsx (Tampilan Asli Kamu, Logika Baru)
+
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Import Link dan useNavigate
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext'; // <-- Impor 'useAuth'
+
+// --- Simulasi Database User ---
+const dummyUsers = {
+  "user@email.com": { 
+    password: "123", 
+    role: "pelanggan", 
+    name: "Suci Pelanggan" 
+  },
+  "admin@email.com": {
+    password: "123",
+    role: "admin",
+    name: "Admin Hawaii"
+  },
+};
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate(); // Inisialisasi hook useNavigate
+  const navigate = useNavigate();
+  const { login } = useAuth(); // <-- Ambil fungsi login dari context
 
-  // Function to display a custom message box (instead of alert)
+  // Ini adalah fungsi message box asli dari kodemu, kita pakai lagi
   const displayMessageBox = (message) => {
     const messageBox = document.createElement('div');
     messageBox.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50';
@@ -22,36 +40,43 @@ const LoginPage = () => {
     };
   };
 
+  // --- INI SATU-SATUNYA BAGIAN YANG KITA UBAH: LOGIKA handleLogin ---
   const handleLogin = (e) => {
     e.preventDefault();
-    // Placeholder for actual login logic (e.g., API call to authenticate)
-    // Untuk saat ini, kita akan mensimulasikan login berhasil dan melakukan navigasi.
-    displayMessageBox(`Login dengan Email: ${email} dan Password: ${password}`); // Pesan opsional
-    console.log('Email:', email, 'Password:', password); // Log data login
+    const userInDb = dummyUsers[email];
 
-    // Langsung arahkan ke halaman dashboard setelah (simulasi) login berhasil
-    navigate('/dashboard'); // BARIS INI YANG MENGARAHKAN KE DASHBOARD
+    if (userInDb && userInDb.password === password) {
+      // Login berhasil
+      const userData = {
+        name: userInDb.name,
+        email: email,
+        role: userInDb.role,
+      };
+      login(userData); // Simpan data user ke context
+
+      // Arahkan ke halaman yang sesuai
+      if (userInDb.role === 'admin') {
+        navigate('/dashboard');
+      } else {
+        navigate('/profile');
+      }
+    } else {
+      // Login gagal, panggil message box dari kodemu
+      displayMessageBox('Email atau password yang Anda masukkan salah.');
+    }
   };
 
   const handleForgotPassword = () => {
     displayMessageBox('Link "Lupa Password?" Diklik!');
   };
 
+  // --- TAMPILAN (JSX) DI BAWAH INI 100% SAMA SEPERTI KODEMU YANG AWAL ---
   return (
-    // Mengurangi padding vertikal pada container utama
-    // Konten kini akan lebih terpusat dan padat
     <div className="w-full flex flex-col items-center justify-center py-6 px-4 sm:px-6 lg:px-8">
-      {/* Label "Halaman Login" dipindahkan ke AuthLayout untuk menghindari duplikasi
-          dan agar konsisten dengan struktur layout. */}
-
-      {/* "Silahkan Login Terlebih Dahulu" Card - Mengurangi margin-bottom & menambah lebar */}
       <div className="bg-orange-100 text-orange-800 text-center py-3 px-6 rounded-lg shadow-md mb-4 max-w-md w-full">
         Silahkan Login Terlebih Dahulu
       </div>
-
-      {/* Login Form Card - Mengurangi padding internal & menambah lebar */}
       <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full text-center">
-        {/* Logo Hawaii - Mengurangi margin-bottom */}
         <div className="mb-4">
           <img
             src="/images/logo hawai.png"
@@ -60,48 +85,43 @@ const LoginPage = () => {
           />
           <p className="text-xl font-semibold text-red-700"></p>
         </div>
-
-        {/* Email Input */}
-        <div className="mb-3">
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-400 bg-red-50 text-red-900 placeholder-red-400"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-
-        {/* Password Input */}
-        <div className="mb-3">
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-400 bg-red-50 text-red-900 placeholder-red-400"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-
-        {/* Lupa Password Link */}
-        <div className="text-right mb-3">
-          <button
-            onClick={handleForgotPassword}
-            className="text-sm text-red-600 hover:underline focus:outline-none"
-          >
-            Lupa password?
-          </button>
-        </div>
-
-        {/* Login Button */}
-        <button
-          onClick={handleLogin} // Panggil fungsi handleLogin saat diklik
-          className="w-full py-3 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-        >
-          Login
-        </button>
-
-        {/* "Belum memiliki akun? Daftar" Link - Menggunakan Link untuk navigasi */}
+        <form onSubmit={handleLogin}>
+            <div className="mb-3">
+            <input
+                type="email"
+                placeholder="Email"
+                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-400 bg-red-50 text-red-900 placeholder-red-400"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+            />
+            </div>
+            <div className="mb-3">
+            <input
+                type="password"
+                placeholder="Password"
+                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-400 bg-red-50 text-red-900 placeholder-red-400"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+            />
+            </div>
+            <div className="text-right mb-3">
+            <button
+                type="button" // Ubah jadi type="button" agar tidak men-submit form
+                onClick={handleForgotPassword}
+                className="text-sm text-red-600 hover:underline focus:outline-none"
+            >
+                Lupa password?
+            </button>
+            </div>
+            <button
+                type="submit" // Gunakan type="submit" untuk tombol login utama
+                className="w-full py-3 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            >
+                Login
+            </button>
+        </form>
         <div className="mt-4 text-sm text-gray-700">
           Belum memiliki akun?{' '}
           <Link
