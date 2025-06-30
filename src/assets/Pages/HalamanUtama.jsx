@@ -395,7 +395,8 @@ const HomePage = () => {
               <li>
                 <a
                   href="/faq"
-                  
+                  className="hover:text-white transition-colors"
+                  onClick={() => displayMessageBox("Halaman FAQ segera hadir!")}
                 >
                   FAQ
                 </a>
@@ -403,7 +404,10 @@ const HomePage = () => {
               <li>
                 <a
                   href="/form-pengaduan"
-                  
+                  className="hover:text-white transition-colors"
+                  onClick={() =>
+                    displayMessageBox("Silakan hubungi customer service kami.")
+                  }
                 >
                   Pengaduan Pelanggan
                 </a>
