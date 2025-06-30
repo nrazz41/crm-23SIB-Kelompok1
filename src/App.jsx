@@ -40,6 +40,7 @@ import { CartProvider } from './assets/contexts/CartContext';
 import { OrderProvider } from './assets/contexts/OrderContext';
 import { AuthProvider } from './assets/contexts/AuthContext';
 import SalesReportsPage from "./assets/Pages/SalesReportsPage";
+import MembershipLevel from "./assets/Pages/MembershipLevel";
 
 function App() {
   return (
@@ -74,6 +75,7 @@ function App() {
           <Route path="/sales" element={<SalesManagement />} />
           <Route path="/product" element={<ProductManagement />} />
           <Route path="/complaint-form" element={<ComplaintForm />} />
+          <Route path="/loyalty" element={<MembershipLevel />} />
           <Route path="/promo" element={<PromoPelanggan />} />
           <Route path="/masukan" element={<CustomerFeedbackManager />} />
           <Route path="/riwayat" element={<SalesHistoryPage />} />

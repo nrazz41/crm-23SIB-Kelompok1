@@ -10,12 +10,10 @@ import {
   UserPlus, // Untuk Sign Up
   FileText, // Ikon untuk Keluhan & Layanan
   LogOut, // Ikon untuk Logout
-  Newspaper,
-  Briefcase,
-  MessageCircle,
-  Gift,
-  ClipboardList,
-  History, // <<< --- IMPORT INI untuk Artikel
+  Newspaper, // Ikon untuk Artikel
+  Gift, // Ikon untuk Hadiah (digunakan untuk Loyalty)
+  ClipboardList, // Ikon untuk Daftar
+  History, // Ikon untuk Riwayat
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -26,10 +24,10 @@ const menuItems = [
   { name: 'Produk', icon: <Box />, path: '/product' },
   { name: 'Pelanggan', icon: <Users />, path: '/pelanggan' },
   { name: 'Penjualan', icon: <ShoppingCart />, path: '/penjualan' },
-  // PERBAIKAN DI SINI: Sesuaikan path '/laporan' menjadi '/laporan-penjualan'
+  { name: 'Loyalty', icon: <Gift />, path: '/loyalty' }, // Ganti ikon di sini
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan-penjualan' },
   { name: 'Keluhan & Layanan', icon: <FileText />, path: '/masukan' },
-  { name: 'Promo', icon: <Tag />, path: '/Promo' },
+  { name: 'Promo', icon: <Tag />, path: '/promo' },
   { name: 'Artikel', icon: <Newspaper />, path: '/artikel' },
 ];
 
@@ -41,12 +39,9 @@ const Sidebar = () => {
   const location = useLocation();
 
   const isActive = (path) => {
-    // Check for exact match for the root path, if applicable (though dashboard is usually the root for internal)
     if (path === '/') {
       return location.pathname === '/';
     }
-    // Use startsWith to match the beginning of the path,
-    // useful for nested routes like /promo/edit/123
     return location.pathname.startsWith(path);
   };
 
